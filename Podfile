@@ -11,7 +11,6 @@ pod 'Firebase/Database'
 pod 'Firebase/Auth'
 pod 'CodableFirebase'
 pod 'BarcodeScanner', '~> 3.0'
-
 pod 'Firebase/Core'
 pod 'Firebase/Storage'
 

@@ -54,6 +54,11 @@ struct CustomProdutct : Codable{
     
 }
 
+struct SessionStruct{
+    static var updated : Bool?
+    static var filter : String?
+}
+
 
 struct Product : Codable{
     

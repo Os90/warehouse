@@ -9,13 +9,21 @@
 import UIKit
 import Firebase
 
-class MainTableViewController: UIViewController,UISearchBarDelegate {
+class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerViewDelegate,UIPickerViewDataSource {
+    
+    
     
     @IBOutlet weak var filter: UISearchBar!
     
     @IBOutlet weak var mytbl: UITableView!
     
     @IBOutlet weak var scanBtn: UIBarButtonItem!
+    
+    @IBOutlet weak var indicator: UIActivityIndicatorView!
+    
+    var filterArray  = ["Heute","Team","Ingesamt","Bestand 0"]
+    
+    var selectedFilter : String?
     
     var db: DatabaseReference!
     
@@ -25,11 +33,18 @@ class MainTableViewController: UIViewController,UISearchBarDelegate {
         super.viewDidLoad()
         registerCell(tableName: mytbl, nibname: "MainCell", cell: "Cell")
         db = Database.database().reference()
+        indicator.startAnimating()
         dataFromServer()
         filter.placeholder = "name"
         filter.showsCancelButton = true
         filter.keyboardType = .default
         filter.delegate = self
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        guard let update = SessionStruct.updated else {return}
+        if update == true{
+            dataFromServer()
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -40,26 +55,77 @@ class MainTableViewController: UIViewController,UISearchBarDelegate {
         self.performSegue(withIdentifier: "scan", sender: self)
     }
     
+    func checkFirebaseConnection(){
+        let connectedRef = db.child("bestand")
+        connectedRef.observe(.value, with: { snapshot in
+            if let connected = snapshot.value as? Bool, connected {
+                self.indicator.stopAnimating()
+                self.dataFromServer()
+            } else {
+                let alertController = UIAlertController(title:"Keine Internet Verbindung", message: "Nochmal versuchhen", preferredStyle:.alert)
+                
+                let Action = UIAlertAction.init(title: "Ok", style: .default) { (UIAlertAction) in
+                    self.checkFirebaseConnection()
+                }
+                let CancelAction = UIAlertAction.init(title: "Abbrechen", style: .cancel) { (UIAlertAction) in
+                    
+                }
+                alertController.addAction(Action)
+                alertController.addAction(CancelAction)
+                self.present(alertController, animated: true, completion: nil)
+            }
+        })
+    }
+    
     func dataFromServer(){
         db.child("bestand").observe(.value, with: {(snapshot) in
             if snapshot.childrenCount > 0 {
+                self.indicator.stopAnimating()
+                self.indicator.isHidden = true
                 self.dataProducts.removeAll()
                 for artists in snapshot.children.allObjects as! [DataSnapshot] {
                     let a = CustomProdutct.init(snapshot: artists)
                     self.dataProducts.append(a)
                 }
                 self.realDataProducts = self.dataProducts
-                self.mytbl.reloadData()
+                
+                if let a = SessionStruct.filter{
+                    self.filterSearch()
+                }else{
+                    self.filterSearch(" ")
+                }
             }
         }, withCancel: {
             error in
-            print(error)
+            let alertController = UIAlertController(title:"Ein Fehler ist aufgetreten", message: "Nochmal versuchhen", preferredStyle:.alert)
+            
+            let Action = UIAlertAction.init(title: "Ok", style: .default) { (UIAlertAction) in
+                self.dataFromServer()
+            }
+            let CancelAction = UIAlertAction.init(title: "Abbrechen", style: .cancel) { (UIAlertAction) in
+                
+            }
+            alertController.addAction(Action)
+            alertController.addAction(CancelAction)
+            self.present(alertController, animated: true, completion: nil)
         })
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+//        if segue.identifier == "edit"{
+//            let destinationVC = segue.destination as! DetailViewController
+//            destinationVC.key = dataProducts[sender as! Int].key
+//        }
+        
         if segue.identifier == "edit"{
-            let destinationVC = segue.destination as! DetailViewController
-            destinationVC.key = dataProducts[sender as! Int].key
+            let destinationVC = segue.destination as! ScanDetailViewController
+            destinationVC.name = dataProducts[sender as! Int].name
+            destinationVC.eanValueFrom = dataProducts[sender as! Int].ean
+            destinationVC.date = dataProducts[sender as! Int].date
+            destinationVC.karton = dataProducts[sender as! Int].karton
+            destinationVC.menge = String(dataProducts[sender as! Int].menge)
+            destinationVC.groeße = dataProducts[sender as! Int].size
+            destinationVC.keyValue = dataProducts[sender as! Int].key
+            destinationVC.detaiData = true
         }
     }
     override func viewWillAppear(_ animated: Bool) {
@@ -72,19 +138,121 @@ class MainTableViewController: UIViewController,UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         filterSearch(searchText)
     }
-    func filterSearch(_ filterString: String){
+    func filterSearch(_ filterString: String = ""){
         
-        dataProducts = realDataProducts.filter{ $0.name.lowercased().contains(filterString.lowercased()) }
-        
-        mytbl.reloadData()
+        guard let filter = SessionStruct.filter else {
+                dataProducts = realDataProducts.filter{ $0.name.lowercased().contains(filterString.lowercased()) }
+                mytbl.reloadData()
+                return
+            }
+            switch filter{
+            case "Heute":
+                let todayDate = getDate().components(separatedBy: " ").first
+                dataProducts = realDataProducts.filter{ $0.date.components(separatedBy: " ").first == todayDate}
+                var realAfterFilter = [CustomProdutct]()
+                realAfterFilter = dataProducts
+                if filterString != ""{
+                    dataProducts = realAfterFilter.filter{ $0.name.lowercased().contains(filterString.lowercased()) }
+                    //mytbl.reloadData()
+                }
+                break;
+            case "Team":
+                print("Team")
+                break;
+            case "Ingesamt":
+                dataProducts = realDataProducts
+                if filterString != ""{
+                    dataProducts = realDataProducts.filter{ $0.name.lowercased().contains(filterString.lowercased()) }
+                }
+                break;
+            case "Bestand 0":
+                dataProducts = realDataProducts.filter{ $0.menge == 0}
+                var realAfterFilter = [CustomProdutct]()
+                realAfterFilter = dataProducts
+                if filterString != ""{
+                    dataProducts = realAfterFilter.filter{ $0.name.lowercased().contains(filterString.lowercased()) }
+                }
+                break;
+            default:
+                break
+            }
+            mytbl.reloadData()
     }
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         self.dataProducts = self.realDataProducts
         filter.text = ""
-        
         filter.endEditing(true)
+        filterSearch()
         mytbl.reloadData()
     }
+    @IBAction func filter(_ sender: Any) {
+        let alertView = UIAlertController(
+            title: "",
+            message: "\n\n\n\n\n\n\n\n\n",
+            preferredStyle: .alert)
+        
+        let pickerView = UIPickerView(frame:
+            CGRect(x: 0, y: 50, width: 260, height: 162))
+        pickerView.dataSource = self
+        pickerView.delegate = self
+        pickerView.selectRow(1, inComponent: 0, animated: true)
+        alertView.view.addSubview(pickerView)
+        
+        let image = UIImage(named: "icons8-filter_filled") as UIImage?
+        let button   = UIButton(type: .custom) as UIButton
+        button.frame = CGRectMake(90, 0, 100, 100)
+        button.setImage(image, for: .normal)
+        button.addTarget(self, action: #selector(MainTableViewController.btnTouched), for:.touchUpInside)
+        
+        
+        alertView.view.addSubview(button)
+        
+        
+        alertView.addAction(UIAlertAction(title: "Filtern", style: .default, handler: { (action: UIAlertAction!) in
+            
+            let attributedString = NSAttributedString(string: SessionStruct.filter ?? "© Warehouse",
+                                                      attributes: [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 10.0)])
+            self.navigationItem.title = attributedString.string
+            self.filterSearch()
+            //self.filterSearch("Filter")
+            //SessionStruct.filter = self.selectedFilter
+        }))
+        
+        
+        alertView.addAction(UIAlertAction(title: "Abbrechen", style: .destructive, handler: { (action: UIAlertAction!) in
+            //self.selectedFilter = ""
+            SessionStruct.filter = nil
+            alertView.dismiss(animated: true, completion: nil)
+        }))
+        
+        present(alertView, animated: true, completion: {
+            pickerView.frame.size.width = alertView.view.frame.size.width
+        })
+        
+    }
+    
+    @objc func btnTouched(){
+        print("ok")
+    }
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return filterArray.count
+    }
+    
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return filterArray[row]
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        //selectedFilter = filterArray[row]
+        SessionStruct.filter = filterArray[row]
+    }
+    
     
 }
 extension MainTableViewController: UITableViewDelegate,UITableViewDataSource{
@@ -122,7 +290,9 @@ extension MainTableViewController: UITableViewDelegate,UITableViewDataSource{
         return 92.0
     }
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        
         return "Alle Produkte (\(dataProducts.count))"
+        
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.performSegue(withIdentifier: "edit", sender: indexPath.row)
@@ -153,5 +323,10 @@ extension MainTableViewController: UITableViewDelegate,UITableViewDataSource{
             }else{
             }
         })
+    }
+}
+extension UIViewController {
+    func CGRectMake(_ x: CGFloat, _ y: CGFloat, _ width: CGFloat, _ height: CGFloat) -> CGRect {
+        return CGRect(x: x, y: y, width: width, height: height)
     }
 }

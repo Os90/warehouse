@@ -128,41 +128,41 @@ class DetailViewController: UIViewController,UIImagePickerControllerDelegate,UIN
         colorLabel.getRoundLabel(colorLabel)
     }
     @IBAction func saveAct(_ sender: Any) {
-        var myurl = ""
-        if imageUploadSucces{
-            uploadMedia() { url in
-                if let okurl = url{
-                    myurl = okurl
-                    self.detailData?.imageUrl = myurl
-                     self.detailData?.date =  self.getDate()
-                    guard let dict =  self.detailData.getDictionary() else {return}
-                     self.db.child("bestand").child(( self.detailData?.key)!).updateChildValues(dict, withCompletionBlock: {error, ref in
-                        if error != nil{
-                            self.errorAlert()
-                        }
-                        else{
-                            self.saveProcess("bearbeiten", (self.detailData?.menge)!, (self.detailData?.ean)!,(self.detailData?.key)!)
-                            self.saveBtn.isEnabled = false
-                            self.navigationController?.popViewController(animated: true)
-                        }
-                    })
-                }
-            }
-        }else{
-            detailData?.imageUrl = myurl
-            detailData?.date = getDate()
-            guard let dict = detailData.getDictionary() else {return}
-            db.child("bestand").child((detailData?.key)!).updateChildValues(dict, withCompletionBlock: {error, ref in
-                if error != nil{
-                    self.errorAlert()
-                }
-                else{
-                    self.saveProcess("bearbeiten", (self.detailData?.menge)!, (self.detailData?.ean)!,(self.detailData?.key)!)
-                    self.saveBtn.isEnabled = false
-                    self.navigationController?.popViewController(animated: true)
-                }
-            })
-        }
+//        var myurl = ""
+//        if imageUploadSucces{
+//            uploadMedia() { url in
+//                if let okurl = url{
+//                    myurl = okurl
+//                    self.detailData?.imageUrl = myurl
+//                    self.detailData?.date =  self.getDate()
+//                    guard let dict =  self.detailData.getDictionary() else {return}
+//                     self.db.child("bestand").child(( self.detailData?.key)!).updateChildValues(dict, withCompletionBlock: {error, ref in
+//                        if error != nil{
+//                            self.errorAlert()
+//                        }
+//                        else{
+//                            self.saveProcess("bearbeiten", (self.detailData?.menge)!, (self.detailData?.ean)!,(self.detailData?.key)!)
+//                            self.saveBtn.isEnabled = false
+//                            self.navigationController?.popViewController(animated: true)
+//                        }
+//                    })
+//                }
+//            }
+//        }else{
+//            detailData?.imageUrl = myurl
+//            detailData?.date = getDate()
+//            guard let dict = detailData.getDictionary() else {return}
+//            db.child("bestand").child((detailData?.key)!).updateChildValues(dict, withCompletionBlock: {error, ref in
+//                if error != nil{
+//                    self.errorAlert()
+//                }
+//                else{
+//                    self.saveProcess("bearbeiten", (self.detailData?.menge)!, (self.detailData?.ean)!,(self.detailData?.key)!)
+//                    self.saveBtn.isEnabled = false
+//                    self.navigationController?.popViewController(animated: true)
+//                }
+//            })
+//        }
 
         
     }
@@ -220,25 +220,25 @@ class DetailViewController: UIViewController,UIImagePickerControllerDelegate,UIN
         self.present(alert, animated: true, completion: nil)
     }
     func handleReturnOfAlert(_ text : String, _ index : Int){
-        
-        saveBtn.isEnabled = true
-        
-        switch index {
-        case 0:
-            detailData?.name = text
-        case 1:
-            detailData?.menge = Int(text)!
-        case 2:
-            detailData?.position = text
-        case 3:
-            detailData?.size = text
-        case 4:
-            detailData?.karton = text
-        default:
-            break
-        }
-        mytbl.reloadData()
-        updateUI()
+//
+//        saveBtn.isEnabled = true
+//
+//        switch index {
+//        case 0:
+//            detailData?.name = text
+//        case 1:
+//            detailData?.menge = Int(text)!
+//        case 2:
+//            detailData?.position = text
+//        case 3:
+//            detailData?.size = text
+//        case 4:
+//            detailData?.karton = text
+//        default:
+//            break
+//        }
+//        mytbl.reloadData()
+//        updateUI()
     }
     func uploadMedia(completion: @escaping (_ url: String?) -> Void) {
         
@@ -306,7 +306,7 @@ extension DetailViewController : UITableViewDelegate,UITableViewDataSource{
         default:
             break
         }
-        cell.stepper.value = Double(data.menge)
+        //cell.stepper.value = Double(data.menge)
         cell.stepper.section = 0
         cell.stepper.row = indexPath.row
         cell.stepper.addTarget(self, action: #selector(self.stepperValueChanged(_:)), for: UIControlEvents.valueChanged)
@@ -317,7 +317,7 @@ extension DetailViewController : UITableViewDelegate,UITableViewDataSource{
         let stepperValue = Int(stepper.value)
         let indexPath = IndexPath(row: stepper.row!, section: stepper.section!)
         print(stepperValue)
-        detailData!.menge = stepperValue
+        //detailData!.menge = stepperValue
         mytbl.reloadData()
     }
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {

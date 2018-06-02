@@ -22,6 +22,9 @@
 		15AFC2F620A3D8F100740563 /* ScanStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 15AFC2F520A3D8F100740563 /* ScanStoryboard.storyboard */; };
 		15AFC2F920A3E7E900740563 /* ScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AFC2F820A3E7E900740563 /* ScanViewController.swift */; };
 		15AFC2FB20A4582800740563 /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AFC2FA20A4582800740563 /* MainTableViewController.swift */; };
+		15C5D60A20C2385600E934E0 /* ScanDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C5D60920C2385600E934E0 /* ScanDetailViewController.swift */; };
+		15C5D60D20C24B8300E934E0 /* Info1TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C5D60C20C24B8300E934E0 /* Info1TableViewCell.swift */; };
+		15C5D60F20C24B9100E934E0 /* Info2TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C5D60E20C24B9100E934E0 /* Info2TableViewCell.swift */; };
 		15CB2CE320A6670800E7250A /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CB2CE220A6670800E7250A /* DetailViewController.swift */; };
 		15D161B3209E8C760020563A /* VarianteAddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15D161B2209E8C760020563A /* VarianteAddViewController.swift */; };
 		15E9348620A664A900510DCF /* EditCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 15E9348520A664A900510DCF /* EditCell.xib */; };
@@ -76,6 +79,9 @@
 		15AFC2F520A3D8F100740563 /* ScanStoryboard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ScanStoryboard.storyboard; sourceTree = "<group>"; };
 		15AFC2F820A3E7E900740563 /* ScanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanViewController.swift; sourceTree = "<group>"; };
 		15AFC2FA20A4582800740563 /* MainTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewController.swift; sourceTree = "<group>"; };
+		15C5D60920C2385600E934E0 /* ScanDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanDetailViewController.swift; sourceTree = "<group>"; };
+		15C5D60C20C24B8300E934E0 /* Info1TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Info1TableViewCell.swift; sourceTree = "<group>"; };
+		15C5D60E20C24B9100E934E0 /* Info2TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Info2TableViewCell.swift; sourceTree = "<group>"; };
 		15CB2CE220A6670800E7250A /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		15D161B2209E8C760020563A /* VarianteAddViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VarianteAddViewController.swift; sourceTree = "<group>"; };
 		15E9348520A664A900510DCF /* EditCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EditCell.xib; sourceTree = "<group>"; };
@@ -179,8 +185,18 @@
 				15E9348520A664A900510DCF /* EditCell.xib */,
 				15E9348720A6656800510DCF /* DetailViewCell.swift */,
 				15EC3BA0209798CE004548C8 /* ProductClass.swift */,
+				15C5D60920C2385600E934E0 /* ScanDetailViewController.swift */,
 			);
 			path = Final;
+			sourceTree = "<group>";
+		};
+		15C5D60B20C24B6100E934E0 /* CustomCell */ = {
+			isa = PBXGroup;
+			children = (
+				15C5D60C20C24B8300E934E0 /* Info1TableViewCell.swift */,
+				15C5D60E20C24B9100E934E0 /* Info2TableViewCell.swift */,
+			);
+			path = CustomCell;
 			sourceTree = "<group>";
 		};
 		15EC3B612095DD75004548C8 = {
@@ -208,6 +224,7 @@
 		15EC3B6C2095DD75004548C8 /* Warehouse */ = {
 			isa = PBXGroup;
 			children = (
+				15C5D60B20C24B6100E934E0 /* CustomCell */,
 				AC93771720B409E000CCC884 /* Warehouse.entitlements */,
 				1555A2A720A46CCB005EBC43 /* Assets.xcassets */,
 				15AFC2F720A3DF4A00740563 /* Final */,
@@ -499,18 +516,21 @@
 				15E9348820A6656800510DCF /* DetailViewCell.swift in Sources */,
 				153C17B6209D48190049B634 /* MyControl.swift in Sources */,
 				15AFC2F920A3E7E900740563 /* ScanViewController.swift in Sources */,
+				15C5D60F20C24B9100E934E0 /* Info2TableViewCell.swift in Sources */,
 				15EC3BA1209798CE004548C8 /* ProductClass.swift in Sources */,
 				15AFC2FB20A4582800740563 /* MainTableViewController.swift in Sources */,
 				15EC3B702095DD75004548C8 /* ViewController.swift in Sources */,
 				153C17A9209BEFE50049B634 /* MainTableViewCell.swift in Sources */,
 				153C17A5209BE2A10049B634 /* DetailTableViewCell.swift in Sources */,
 				15CB2CE320A6670800E7250A /* DetailViewController.swift in Sources */,
+				15C5D60A20C2385600E934E0 /* ScanDetailViewController.swift in Sources */,
 				15EC3BA320989985004548C8 /* Test.swift in Sources */,
 				153C17B0209CA1FD0049B634 /* SelectedTableViewCell.swift in Sources */,
 				15D161B3209E8C760020563A /* VarianteAddViewController.swift in Sources */,
 				15EC3B762095DD75004548C8 /* Bellis.xcdatamodeld in Sources */,
 				153C17B2209CA3FD0049B634 /* SelectViewController.swift in Sources */,
 				15599291209E6E7C00F2322D /* AddViewController.swift in Sources */,
+				15C5D60D20C24B8300E934E0 /* Info1TableViewCell.swift in Sources */,
 				15EC3B6E2095DD75004548C8 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -689,7 +709,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5YQ9RSLRVT;
 				INFOPLIST_FILE = Warehouse/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -710,7 +730,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5YQ9RSLRVT;
 				INFOPLIST_FILE = Warehouse/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

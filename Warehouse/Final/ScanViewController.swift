@@ -9,6 +9,7 @@
 import UIKit
 import BarcodeScanner
 import Firebase
+import AVFoundation
 
 class ScanViewController: UIViewController,UIPickerViewDelegate,UIPickerViewDataSource {
     
@@ -33,7 +34,7 @@ class ScanViewController: UIViewController,UIPickerViewDelegate,UIPickerViewData
     
     //Firebase
     var db: DatabaseReference!
-
+    
     var textField: UITextField?
     var textFieldPosition: UITextField?
     var textFieldKarton: UITextField?
@@ -46,8 +47,26 @@ class ScanViewController: UIViewController,UIPickerViewDelegate,UIPickerViewData
         super.viewDidLoad()
         db = Database.database().reference()
         pickerData = ["Keine Größe","S","M","L","XL"]
+//        checkForPrivacy()
+
         setupScanner()
         setupSubview()
+    }
+    
+    func checkForPrivacy(){
+        if AVCaptureDevice.authorizationStatus(for: .video) ==  .authorized {
+            setupScanner()
+            setupSubview()
+        } else {
+            AVCaptureDevice.requestAccess(for: .video, completionHandler: { (granted: Bool) in
+                if granted {
+                    self.setupScanner()
+                    self.setupSubview()
+                } else {
+                    //access denied
+                }
+            })
+        }
     }
     func setupScanner(){
         guard let mapController = childViewControllers.last as? BarcodeScannerController else {
@@ -58,7 +77,7 @@ class ScanViewController: UIViewController,UIPickerViewDelegate,UIPickerViewData
         mapController.dismissalDelegate = self
     }
     func setupSubview(){
-       forwardButton.isEnabled = false
+        forwardButton.isEnabled = false
         
         if userdefaults.object(forKey: "income") != nil {
             importBtn.isEnabled = UserDefaults.standard.bool(forKey: "income")
@@ -99,7 +118,7 @@ class ScanViewController: UIViewController,UIPickerViewDelegate,UIPickerViewData
         if (textField) != nil {
             self.textField = textField!        //Save reference to the UITextField
             self.textField?.placeholder = "Stückzahl Eingeben Bitte";
-           // self.textField?.becomeFirstResponder()
+            // self.textField?.becomeFirstResponder()
             self.textField?.keyboardType = .numberPad
         }
     }
@@ -180,6 +199,17 @@ class ScanViewController: UIViewController,UIPickerViewDelegate,UIPickerViewData
         }))
         self.present(alert, animated: true, completion: nil)
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "detail"{
+            self.childViewControllers.last?.removeFromParentViewController()
+            let destinationVC = segue.destination as! ScanDetailViewController
+            destinationVC.eanValueFrom = eanOutputLbl.text
+            destinationVC.firstScan = true
+        }
+    }
+    
+    
     @IBAction func forwardBtnAct(_ sender: Any) {
         var text = ""
         var caseInt = 0
@@ -190,12 +220,14 @@ class ScanViewController: UIViewController,UIPickerViewDelegate,UIPickerViewData
             caseInt = 0
         case false:
             print("exportiren wir")
-             text = "ausbuchen"
+            text = "ausbuchen"
             caseInt = 1
         default:
             break
         }
-        alertWithPickerAndTextField(text,caseInt)
+        self.performSegue(withIdentifier: "detail", sender: self)
+        
+        //alertWithPickerAndTextField(text,caseInt)
     }
     func saveToFirebase(_ caseVal : Int,stückzahl : String?, size : String?, ean: String?, position : String?,karton : String?){
         
@@ -206,7 +238,7 @@ class ScanViewController: UIViewController,UIPickerViewDelegate,UIPickerViewData
                 count = amount
             }
             if caseVal == 0{
-                 postWithParameter(count,pickerData[0],ean!,"keine Position","0")
+                postWithParameter(count,pickerData[0],ean!,"keine Position","0")
             }else{
                 updateWithParameter(count,pickerData[0],ean!,"keine Position")
             }
@@ -222,12 +254,12 @@ class ScanViewController: UIViewController,UIPickerViewDelegate,UIPickerViewData
         }else{
             updateWithParameter(stock,sizeInit,eanValue,posValue)
         }
-//        postWithParameter(stock,sizeValue,eanValue)
+        //        postWithParameter(stock,sizeValue,eanValue)
     }
     func postWithParameter(_ realStock : String,_ realSize : String, _ realEan : String,_ realPosition :String,_ realKarton :String){
         //realKarton
         var product = CustomProdutct()
-        product.menge = Int(realStock)!
+        //product.menge = Int(realStock)!
         product.ean = realEan
         product.karton = realKarton
         product.size = realSize
@@ -244,9 +276,14 @@ class ScanViewController: UIViewController,UIPickerViewDelegate,UIPickerViewData
                 
                 self.present(alert, animated: true)
             }else{
-                 self.saveProcess("importieren",Int(realStock)!,realEan)
+                self.saveProcess("importieren",Int(realStock)!,realEan)
                 let alert = UIAlertController(title: "Erfolgreich erstellt", message: nil, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+//                    for v in self.view.subviews{
+//                        v.removeFromSuperview()
+//                    }s
+                    self.childViewControllers.last?.removeFromParentViewController()
+                    
                     self.navigationController?.popViewController(animated: true)
                 }))
                 
@@ -256,7 +293,7 @@ class ScanViewController: UIViewController,UIPickerViewDelegate,UIPickerViewData
     }
     
     func updateWithParameter(_ realStock : String,_ realSize : String, _ realEan : String, _ realPosition : String){
-      
+        
         
         // ean muss vorhanden sein um es zu exportieren ----
         let dict = ["menge":Int(realStock)!,"size":realSize,"position":realPosition] as [String : Any]
@@ -281,18 +318,18 @@ class ScanViewController: UIViewController,UIPickerViewDelegate,UIPickerViewData
     }
     
     @IBAction func outcomeAct(_ sender: Any){
-//        self.importBtn.isEnabled = true
-//        self.exportBtn.isEnabled = false
-//        userdefaults.set(self.exportBtn.isEnabled , forKey: "outcome")
-//        userdefaults.set(self.importBtn.isEnabled, forKey: "income")
+        //        self.importBtn.isEnabled = true
+        //        self.exportBtn.isEnabled = false
+        //        userdefaults.set(self.exportBtn.isEnabled , forKey: "outcome")
+        //        userdefaults.set(self.importBtn.isEnabled, forKey: "income")
     }
     
-
+    
     @IBAction func incomeAct(_ sender: Any) {
-//        self.exportBtn.isEnabled = true
-//        self.importBtn.isEnabled = false
-//        userdefaults.set(self.importBtn.isEnabled, forKey: "income")
-//        userdefaults.set(self.exportBtn.isEnabled, forKey: "outcome")
+        //        self.exportBtn.isEnabled = true
+        //        self.importBtn.isEnabled = false
+        //        userdefaults.set(self.importBtn.isEnabled, forKey: "income")
+        //        userdefaults.set(self.exportBtn.isEnabled, forKey: "outcome")
     }
     
     func saveProcess(_ text : String,_ realStock : Int,_ realEan : String){
@@ -300,18 +337,18 @@ class ScanViewController: UIViewController,UIPickerViewDelegate,UIPickerViewData
         let dict = ["vorgang":text,"ean":realEan,"menge":realStock,"view": "ScanView","datum": getDate()] as [String : Any]
         self.db.child("prozesse").child(text).childByAutoId().setValue(dict, withCompletionBlock: {error ,ref in
             if error != nil{
-//                let alert = UIAlertController(title: "Fehler beim erstellen", message: nil, preferredStyle: .alert)
-//                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
-//                    self.navigationController?.popViewController(animated: true)
-//                }))
+                //                let alert = UIAlertController(title: "Fehler beim erstellen", message: nil, preferredStyle: .alert)
+                //                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+                //                    self.navigationController?.popViewController(animated: true)
+                //                }))
                 
                 //self.present(alert, animated: true)
             }else{
-//                let alert = UIAlertController(title: "Prozess erstellt", message: nil, preferredStyle: .alert)
-//                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
-//                    self.navigationController?.popViewController(animated: true)
-//                }))
-               // self.navigationController?.popViewController(animated: true)
+                //                let alert = UIAlertController(title: "Prozess erstellt", message: nil, preferredStyle: .alert)
+                //                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+                //                    self.navigationController?.popViewController(animated: true)
+                //                }))
+                // self.navigationController?.popViewController(animated: true)
                 //self.present(alert, animated: true)
             }
         })
@@ -326,9 +363,9 @@ extension ScanViewController: BarcodeScannerCodeDelegate,BarcodeScannerErrorDele
         //print("Barcode Data: \(code)")
         let delayTime = DispatchTime.now() + Double(Int64(1 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
         DispatchQueue.main.asyncAfter(deadline: delayTime) {
-                self.eanOutputLbl.text = code
-                self.forwardButton.isEnabled = true
-                self.mapViewController?.resetWithError()
+            self.eanOutputLbl.text = code
+            self.forwardButton.isEnabled = true
+            self.mapViewController?.resetWithError()
         }
     }
     func barcodeScanner(_ controller: BarcodeScannerController, didReceiveError error: Error) {
@@ -364,5 +401,5 @@ extension UIViewController{
         
         return myStringafd
     }
-
+    
 }
