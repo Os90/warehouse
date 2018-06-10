@@ -14,7 +14,6 @@ pod 'BarcodeScanner', '~> 3.0'
 pod 'Firebase/Core'
 pod 'Firebase/Storage'
 
-
   target 'WarehouseTests' do
     inherit! :search_paths
     # Pods for testing

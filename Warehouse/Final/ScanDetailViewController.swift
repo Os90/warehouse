@@ -70,7 +70,7 @@ class ScanDetailViewController: UIViewController {
                 let alert = UIAlertController(title: "Erfolgreich erstellt", message: nil, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
                     SessionStruct.updated = true
-                    self.navigationController?.popViewController(animated: true)
+                    self.navigationController?.popToRootViewController(animated: true)
                 }))
                 self.present(alert, animated: true)
             }
@@ -110,7 +110,7 @@ class ScanDetailViewController: UIViewController {
                 let alert = UIAlertController(title: "Erfolgreich Aktualisiert", message: nil, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
                     SessionStruct.updated = true
-                    self.navigationController?.popViewController(animated: true)
+                    self.navigationController?.popToRootViewController(animated: true)
                 }))
                 self.present(alert, animated: true)
             }
@@ -137,7 +137,7 @@ extension ScanDetailViewController : UITableViewDelegate,UITableViewDataSource{
             switch indexPath.row {
             case 0:
                 cell.leftText.text = "Uhrzeit"
-                cell.rightText.text = date ?? "Kein Datum"
+                cell.rightText.text = date ?? getDate()
             case 2:
                 cell.leftText.text = "Menge"
                 cell.rightText.text = menge ?? "Keine Menge"
@@ -157,11 +157,11 @@ extension ScanDetailViewController : UITableViewDelegate,UITableViewDataSource{
         }
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if indexPath.row == 3 {
-            return 100.0
+        if indexPath.row == 1 {
+            return 78.0
         }
         else {
-            return 80.0
+            return 50.0
         }
     }
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {

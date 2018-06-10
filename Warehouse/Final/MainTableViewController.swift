@@ -32,7 +32,7 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
     override func viewDidLoad() {
         super.viewDidLoad()
         registerCell(tableName: mytbl, nibname: "MainCell", cell: "Cell")
-        db = Database.database().reference()
+       
         indicator.startAnimating()
         dataFromServer()
         filter.placeholder = "name"
@@ -41,10 +41,10 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
         filter.delegate = self
     }
     override func viewDidAppear(_ animated: Bool) {
-        guard let update = SessionStruct.updated else {return}
-        if update == true{
-            dataFromServer()
-        }
+//        guard let update = SessionStruct.updated else {return}
+//        if update == true{
+//            dataFromServer()
+//        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -78,6 +78,7 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
     }
     
     func dataFromServer(){
+         db = Database.database().reference()
         db.child("bestand").observe(.value, with: {(snapshot) in
             if snapshot.childrenCount > 0 {
                 self.indicator.stopAnimating()
@@ -111,10 +112,6 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
         })
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        if segue.identifier == "edit"{
-//            let destinationVC = segue.destination as! DetailViewController
-//            destinationVC.key = dataProducts[sender as! Int].key
-//        }
         
         if segue.identifier == "edit"{
             let destinationVC = segue.destination as! ScanDetailViewController
@@ -125,6 +122,7 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
             destinationVC.menge = String(dataProducts[sender as! Int].menge)
             destinationVC.groeße = dataProducts[sender as! Int].size
             destinationVC.keyValue = dataProducts[sender as! Int].key
+            destinationVC.position = dataProducts[sender as! Int].position
             destinationVC.detaiData = true
         }
     }
@@ -153,7 +151,7 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
                 realAfterFilter = dataProducts
                 if filterString != ""{
                     dataProducts = realAfterFilter.filter{ $0.name.lowercased().contains(filterString.lowercased()) }
-                    //mytbl.reloadData()
+
                 }
                 break;
             case "Team":
@@ -312,7 +310,7 @@ extension MainTableViewController: UITableViewDelegate,UITableViewDataSource{
                 }
                 else{
                     self.saveProcess("löschen",menge,ean,key)
-                    self.dataFromServer()
+                    //self.dataFromServer()
                 }
             }        }
     }

@@ -15,6 +15,8 @@ class ScanViewController: UIViewController,UIPickerViewDelegate,UIPickerViewData
     
     //Outlets
     
+    @IBOutlet weak var barcodeView: UIView!
+    
     @IBOutlet weak var importBtn: UIBarButtonItem!
     
     @IBOutlet weak var exportBtn: UIBarButtonItem!
@@ -48,9 +50,13 @@ class ScanViewController: UIViewController,UIPickerViewDelegate,UIPickerViewData
         db = Database.database().reference()
         pickerData = ["Keine Größe","S","M","L","XL"]
 //        checkForPrivacy()
-
+        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
         setupScanner()
         setupSubview()
+        
     }
     
     func checkForPrivacy(){
@@ -202,7 +208,7 @@ class ScanViewController: UIViewController,UIPickerViewDelegate,UIPickerViewData
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "detail"{
-            self.childViewControllers.last?.removeFromParentViewController()
+            //self.childViewControllers.last?.removeFromParentViewController()
             let destinationVC = segue.destination as! ScanDetailViewController
             destinationVC.eanValueFrom = eanOutputLbl.text
             destinationVC.firstScan = true
