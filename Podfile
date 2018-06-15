@@ -13,6 +13,7 @@ pod 'CodableFirebase'
 pod 'BarcodeScanner', '~> 3.0'
 pod 'Firebase/Core'
 pod 'Firebase/Storage'
+pod 'SwiftCSVExport'
 
   target 'WarehouseTests' do
     inherit! :search_paths

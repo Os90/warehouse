@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0EBCEDEB35FB610F7DF59124 /* Pods_Warehouse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 406D56AA07876038F211D517 /* Pods_Warehouse.framework */; };
+		151CE1AD20D0344200D02963 /* task.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151CE1AC20D0344200D02963 /* task.swift */; };
 		153C17A2209BE26D0049B634 /* DetailCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 153C17A1209BE26D0049B634 /* DetailCell.xib */; };
 		153C17A5209BE2A10049B634 /* DetailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 153C17A4209BE2A10049B634 /* DetailTableViewCell.swift */; };
 		153C17A7209BEFDB0049B634 /* MainCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 153C17A6209BEFDB0049B634 /* MainCell.xib */; };
@@ -63,6 +64,7 @@
 
 /* Begin PBXFileReference section */
 		0CA19254A5457FF1F487332C /* Pods_Bellis.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Bellis.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		151CE1AC20D0344200D02963 /* task.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = task.swift; sourceTree = "<group>"; };
 		153C17A1209BE26D0049B634 /* DetailCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DetailCell.xib; sourceTree = "<group>"; };
 		153C17A4209BE2A10049B634 /* DetailTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailTableViewCell.swift; sourceTree = "<group>"; };
 		153C17A6209BEFDB0049B634 /* MainCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainCell.xib; sourceTree = "<group>"; };
@@ -183,6 +185,7 @@
 				15E9348720A6656800510DCF /* DetailViewCell.swift */,
 				15EC3BA0209798CE004548C8 /* ProductClass.swift */,
 				15C5D60920C2385600E934E0 /* ScanDetailViewController.swift */,
+				151CE1AC20D0344200D02963 /* task.swift */,
 			);
 			path = Final;
 			sourceTree = "<group>";
@@ -449,6 +452,7 @@
 				"${BUILT_PRODUCTS_DIR}/CodableFirebase/CodableFirebase.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftCSVExport/SwiftCSVExport.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
@@ -458,6 +462,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CodableFirebase.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftCSVExport.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
@@ -513,6 +518,7 @@
 				15E9348820A6656800510DCF /* DetailViewCell.swift in Sources */,
 				153C17B6209D48190049B634 /* MyControl.swift in Sources */,
 				15AFC2F920A3E7E900740563 /* ScanViewController.swift in Sources */,
+				151CE1AD20D0344200D02963 /* task.swift in Sources */,
 				15C5D60F20C24B9100E934E0 /* Info2TableViewCell.swift in Sources */,
 				15EC3BA1209798CE004548C8 /* ProductClass.swift in Sources */,
 				15AFC2FB20A4582800740563 /* MainTableViewController.swift in Sources */,

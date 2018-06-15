@@ -111,7 +111,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="nel-dp-1cQ">
-                                <rect key="frame" x="0.0" y="59" width="375" height="719"/>
+                                <rect key="frame" x="0.0" y="59" width="375" height="634"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <color key="separatorColor" red="0.22352941179999999" green="0.32156862749999998" blue="0.43921568630000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <searchBar key="tableHeaderView" contentMode="redraw" id="0Ng-3S-zR0">
@@ -137,14 +137,24 @@
                             <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="6HL-9s-08Q">
                                 <rect key="frame" x="177.66666666666666" y="396" width="20" height="20"/>
                             </activityIndicatorView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lyq-2v-We3">
+                                <rect key="frame" x="102" y="727" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="mach:" destination="zO8-kQ-l3H" eventType="touchUpInside" id="eiP-EM-Kdn"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="nel-dp-1cQ" firstAttribute="leading" secondItem="APg-6U-x4u" secondAttribute="leading" id="4pM-ll-ZNr"/>
-                            <constraint firstItem="nel-dp-1cQ" firstAttribute="bottom" secondItem="APg-6U-x4u" secondAttribute="bottom" id="BRy-wl-Jv7"/>
+                            <constraint firstItem="APg-6U-x4u" firstAttribute="bottom" secondItem="Lyq-2v-We3" secondAttribute="bottom" constant="21" id="5xP-6L-vKy"/>
+                            <constraint firstItem="nel-dp-1cQ" firstAttribute="bottom" secondItem="APg-6U-x4u" secondAttribute="bottom" constant="-85" id="BRy-wl-Jv7"/>
                             <constraint firstItem="nel-dp-1cQ" firstAttribute="top" secondItem="VaN-zl-bIU" secondAttribute="top" constant="59" id="OeO-3a-WTb"/>
                             <constraint firstItem="6HL-9s-08Q" firstAttribute="centerY" secondItem="VaN-zl-bIU" secondAttribute="centerY" id="XNH-hw-4KB"/>
+                            <constraint firstItem="Lyq-2v-We3" firstAttribute="leading" secondItem="APg-6U-x4u" secondAttribute="leading" constant="102" id="f3j-Xp-k3i"/>
                             <constraint firstItem="nel-dp-1cQ" firstAttribute="trailing" secondItem="APg-6U-x4u" secondAttribute="trailing" id="hLW-X5-tTs"/>
+                            <constraint firstItem="APg-6U-x4u" firstAttribute="trailing" secondItem="Lyq-2v-We3" secondAttribute="trailing" constant="227" id="qOB-97-34p"/>
                             <constraint firstItem="6HL-9s-08Q" firstAttribute="centerX" secondItem="VaN-zl-bIU" secondAttribute="centerX" id="u6f-Iq-X0s"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="APg-6U-x4u"/>
@@ -207,7 +217,7 @@
                     </connections>
                 </searchDisplayController>
             </objects>
-            <point key="canvasLocation" x="-164" y="167.76611694152925"/>
+            <point key="canvasLocation" x="-164" y="167.73399014778326"/>
         </scene>
         <!--Detail-->
         <scene sceneID="Gh1-3H-pq7">
@@ -602,6 +612,6 @@
         <image name="icons8-info_filled" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Cl0-EV-oWq"/>
+        <segue reference="CnO-ko-nB6"/>
     </inferredMetricsTieBreakers>
 </document>

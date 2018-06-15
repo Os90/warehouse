@@ -5,13 +5,11 @@
 //  Created by Osman Ashraf on 10.05.18.
 //  Copyright © 2018 osman. All rights reserved.
 //
-
 import UIKit
 import Firebase
+import SwiftCSVExport
 
 class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerViewDelegate,UIPickerViewDataSource {
-    
-    
     
     @IBOutlet weak var filter: UISearchBar!
     
@@ -29,6 +27,10 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
     
     var dataProducts = [CustomProdutct]()
     var realDataProducts = [CustomProdutct]()
+    
+    var taskArr = [Task]()
+    var task: Task!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         registerCell(tableName: mytbl, nibname: "MainCell", cell: "Cell")
@@ -53,6 +55,125 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
     }
     @IBAction func scanBtnAct(_ sender: Any) {
         self.performSegue(withIdentifier: "scan", sender: self)
+    }
+    
+    @IBAction func mach(_ sender: Any) {
+        meins()
+    }
+    // MARK: CSV file creating
+    func creatCSV(_ name : String) -> Void {
+        let fileName = "\(name).csv"
+        let path = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(fileName)
+//        var csvText = "Color,Datum,EAN,image,karton,key,menge,name,position,size,sku,variantenID\n"
+//
+//        for task in taskArr {
+//            let newLine = "\(task.color),\(task.date),\(task.ean),\(task.imageUrl),\(task.karton),\(task.key),\(task.menge),\(task.name),\(task.position),\(task.size),\(task.sku),\(task.vID)\n"
+//            csvText.append(newLine)
+//        }
+        
+        var csvText = ""
+        if name == "kunde"{
+            csvText = "EAN,Menge,Name\n"
+            for task in taskArr {
+                let newLine = "\(task.ean),\(task.menge),\(task.name)\n"
+                csvText.append(newLine)
+            }
+        }
+        else{
+            csvText = "ID,Color,Datum,EAN,Karton,Menge,Name,Position,Größe,SKU\n"
+            for task in taskArr {
+                let newLine = "\(task.id),\(task.color),\(task.date),\(task.ean),\(task.karton),\(task.menge),\(task.name),\(task.position),\(task.size),\(task.sku)\n"
+                csvText.append(newLine)
+            }
+        }
+
+        do {
+            try csvText.write(to: path!, atomically: true, encoding: String.Encoding.utf8)
+        } catch {
+            print("Failed to create file")
+            print("\(error)")
+        }
+        print(path ?? "not found")
+    }
+    
+    func meins(){
+        
+       // CSVExport.export.enableStrictValidation = true
+        
+       var ii = 0
+        for i in realDataProducts{
+            ii = ii + 1
+            task = Task()
+            task.id = ii
+            task.color = i.color
+            task.date = i.date
+            task.ean = i.ean
+            task.imageUrl = i.imageUrl
+            let karton = i.karton.replacingOccurrences(of: "und", with: "/")
+            let karton2 = karton.replacingOccurrences(of: ",", with: "/")
+            let karton3 = karton2.replacingOccurrences(of: " ", with: "")
+            task.karton = karton3
+            task.key = i.key
+            task.menge = i.menge
+            task.name = i.name
+            task.position = i.position
+            task.size = i.size
+            task.sku = i.sku
+            task.vID = i.vID
+            taskArr.append(task!)
+        }
+        creatCSV("bestand")
+        
+        
+        taskArr.removeAll()
+        ii = 0
+        for i in realDataProducts{
+            ii = ii + 1
+            task = Task()
+            task.id = ii
+            task.color = i.color
+            task.date = i.date
+            task.ean = i.ean
+            task.imageUrl = i.imageUrl
+            
+
+            
+            let karton = i.karton.replacingOccurrences(of: "und", with: "/")
+            let karton2 = karton.replacingOccurrences(of: ",", with: "/")
+            let karton3 = karton2.replacingOccurrences(of: " ", with: "")
+            task.karton = karton3
+
+            task.key = i.key
+            task.menge = i.menge
+            task.name = i.name
+            task.position = i.position
+            task.size = i.size
+            task.sku = i.sku
+            task.vID = i.vID
+            
+            if let local = taskArr.first(where: {$0.ean == i.ean}) {
+                print("-----------")
+                print("ID von local",local.id)
+                print("ean von i",i.ean)
+                print("ean von local",local.ean)
+                print("menge von local",local.menge)
+                print("menge von i",i.menge)
+                local.menge += i.menge
+                print("after menge von local",local.menge)
+                if let index = taskArr.index(where: {$0.ean == i.ean}) {
+                    print("index",index)
+                    taskArr.remove(at: index)
+                    taskArr.append(local)
+                    //print("EAN after", taskArr[index].ean)
+                    print("-----------")
+                }
+            }else{
+                taskArr.append(task!)
+            }
+        }
+         creatCSV("kunde")
+        //https://bellisproduct-24167.firebaseio.com/bestand.json?menge=true
+        //curl 'https://bellisproduct-24167].firebaseio.com/bestan.json'
     }
     
     func checkFirebaseConnection(){
@@ -80,11 +201,13 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
     func dataFromServer(){
          db = Database.database().reference()
         db.child("bestand").observe(.value, with: {(snapshot) in
+           // print(snapshot)
             if snapshot.childrenCount > 0 {
                 self.indicator.stopAnimating()
                 self.indicator.isHidden = true
                 self.dataProducts.removeAll()
                 for artists in snapshot.children.allObjects as! [DataSnapshot] {
+                    //print(artists)
                     let a = CustomProdutct.init(snapshot: artists)
                     self.dataProducts.append(a)
                 }
