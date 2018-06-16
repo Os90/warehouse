@@ -63,7 +63,7 @@ DEPENDENCIES:
   - SwiftCSVExport
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  https://github.com/cocoapods/specs.git:
     - BarcodeScanner
     - CodableFirebase
     - Firebase
@@ -97,4 +97,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 9518bba80a1698e53a6c4744085fc571f760c6a4
 
-COCOAPODS: 1.5.0
+COCOAPODS: 1.5.3

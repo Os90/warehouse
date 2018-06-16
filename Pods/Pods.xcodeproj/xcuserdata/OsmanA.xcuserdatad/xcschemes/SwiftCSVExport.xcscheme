@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3ADBF50E512E6FE662868B5D9168D9DA"
-               BlueprintName = "Pods-Warehouse"
+               BlueprintIdentifier = "10B5CFC69556F16CF4E83C5ABCCF6EC5"
+               BlueprintName = "SwiftCSVExport"
                ReferencedContainer = "container:Pods.xcodeproj"
-               BuildableName = "Pods-Warehouse.framework">
+               BuildableName = "SwiftCSVExport.framework">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
