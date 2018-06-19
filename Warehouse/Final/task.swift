@@ -28,4 +28,8 @@ class Task: NSObject {
     
     
 }
+struct customObjects {
+    static var url_csv: URL?
+    static var listOfProducts = [CustomProdutct]()
+}
 //"color":"","date":"2018-06-02 15:51:06","ean":"4260528984121","imageUrl":"","karton":"2 und 5","key":"-LD21iKhtsqF2zriN-A5","menge":56,"name":"T00016/S Black","position":"Keine Position","size":"S","sku":"","vID":0}

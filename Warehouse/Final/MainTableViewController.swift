@@ -29,7 +29,16 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
     var realDataProducts = [CustomProdutct]()
     
     var taskArr = [Task]()
+    
+    var kundeTaskArr = [Task]()
+    var bestandTaskArr = [Task]()
+    
     var task: Task!
+    
+    
+    var total = 0
+    
+    var path : URL?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +50,12 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
         filter.showsCancelButton = true
         filter.keyboardType = .default
         filter.delegate = self
+        
+
+        navigationItem.hidesSearchBarWhenScrolling = true
+    
+        listFilesFromDocumentsFolder(customObjects.url_csv!)
+        
     }
     override func viewDidAppear(_ animated: Bool) {
 //        guard let update = SessionStruct.updated else {return}
@@ -57,20 +72,76 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
         self.performSegue(withIdentifier: "scan", sender: self)
     }
     
-    @IBAction func mach(_ sender: Any) {
-        meins()
-    }
-    // MARK: CSV file creating
-    func creatCSV(_ name : String) -> Void {
-        let fileName = "\(name).csv"
-        let path = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(fileName)
-//        var csvText = "Color,Datum,EAN,image,karton,key,menge,name,position,size,sku,variantenID\n"
+//    func loadPDFAndShare(){
 //
-//        for task in taskArr {
-//            let newLine = "\(task.color),\(task.date),\(task.ean),\(task.imageUrl),\(task.karton),\(task.key),\(task.menge),\(task.name),\(task.position),\(task.size),\(task.sku),\(task.vID)\n"
-//            csvText.append(newLine)
+//        let fileManager = FileManager.default
+//        //let documentoPath = (self.getDirectoryPath() as NSString).appendingPathComponent("documento.pdf")
+//
+//        if fileManager.fileExists(atPath: (path?.path)!){
+//            let documento = NSData(contentsOfFile: (path?.path)!)
+//            let activityViewController: UIActivityViewController = UIActivityViewController(activityItems: [documento!], applicationActivities: nil)
+//            activityViewController.popoverPresentationController?.sourceView=self.view
+//            present(activityViewController, animated: true, completion: nil)
+//        }
+//        else {
+//            print("document was not found")
+//        }
+//    }
+    
+    func listFilesFromDocumentsFolder(_ my : URL) -> [Any]?
+    {
+
+        var filesInFolder = [Any]()
+        
+//        let fileManager = FileManager.default
+//        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        
+
+        let documentDirectoryPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+        let myFilesPath = documentDirectoryPath.appending("/CSV")
+        print(myFilesPath)
+        print(documentDirectoryPath)
+        
+        let files = FileManager.default.enumerator(atPath: myFilesPath)
+        
+        while let file = files?.nextObject() {
+            //print("\(myFilesPath)/\(file)")
+            filesInFolder.append(file)
+            //print("aa",my.appendingPathComponent(file as! String))
+        }
+//        let filesOfactic = my.appendingPathComponent(filesInFolder[0] as! String)
+//
+//
+//        let activityViewController: UIActivityViewController = UIActivityViewController(activityItems: [filesOfactic], applicationActivities: nil)
+//        activityViewController.popoverPresentationController?.sourceView=self.view
+//        present(activityViewController, animated: true, completion: nil)
+        
+        return filesInFolder
+        
+//        do {
+//            let fileURLs = try fileManager.contentsOfDirectory(at: my, includingPropertiesForKeys: nil)
+//            print("files", fileURLs)
+//            return fileURLs
+//        } catch {
+//            print("Error while enumerating files \(documentsURL.path): \(error.localizedDescription)")
 //        }
         
+        // List all contents of directory and return as [String] OR nil if failed
+        //return try? fileMngr.contentsOfDirectory(atPath:docs)
+       // return nil
+    }
+    
+    @IBAction func mach(_ sender: Any) {
+
+    }
+    
+    // MARK: CSV file creating
+    func creatCSV(_ name : String, _ array : [Task], _ customUrl : URL) -> Void {
+        taskArr.removeAll()
+        taskArr = array
+        let fileName = "\(name).csv"
+        path = customUrl
+        let b = customUrl.appendingPathComponent(fileName)
         var csvText = ""
         if name == "kunde"{
             csvText = "EAN,Menge,Name\n"
@@ -86,94 +157,101 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
                 csvText.append(newLine)
             }
         }
-
+        
         do {
-            try csvText.write(to: path!, atomically: true, encoding: String.Encoding.utf8)
+            try csvText.write(to: b, atomically: true, encoding: String.Encoding.utf8)
+            print(b)
         } catch {
             print("Failed to create file")
             print("\(error)")
         }
-        print(path ?? "not found")
+
     }
     
     func meins(){
-        
-       // CSVExport.export.enableStrictValidation = true
-        
-       var ii = 0
-        for i in realDataProducts{
-            ii = ii + 1
-            task = Task()
-            task.id = ii
-            task.color = i.color
-            task.date = i.date
-            task.ean = i.ean
-            task.imageUrl = i.imageUrl
-            let karton = i.karton.replacingOccurrences(of: "und", with: "/")
-            let karton2 = karton.replacingOccurrences(of: ",", with: "/")
-            let karton3 = karton2.replacingOccurrences(of: " ", with: "")
-            task.karton = karton3
-            task.key = i.key
-            task.menge = i.menge
-            task.name = i.name
-            task.position = i.position
-            task.size = i.size
-            task.sku = i.sku
-            task.vID = i.vID
-            taskArr.append(task!)
-        }
-        creatCSV("bestand")
-        
-        
-        taskArr.removeAll()
-        ii = 0
-        for i in realDataProducts{
-            ii = ii + 1
-            task = Task()
-            task.id = ii
-            task.color = i.color
-            task.date = i.date
-            task.ean = i.ean
-            task.imageUrl = i.imageUrl
-            
-
-            
-            let karton = i.karton.replacingOccurrences(of: "und", with: "/")
-            let karton2 = karton.replacingOccurrences(of: ",", with: "/")
-            let karton3 = karton2.replacingOccurrences(of: " ", with: "")
-            task.karton = karton3
-
-            task.key = i.key
-            task.menge = i.menge
-            task.name = i.name
-            task.position = i.position
-            task.size = i.size
-            task.sku = i.sku
-            task.vID = i.vID
-            
-            if let local = taskArr.first(where: {$0.ean == i.ean}) {
-                print("-----------")
-                print("ID von local",local.id)
-                print("ean von i",i.ean)
-                print("ean von local",local.ean)
-                print("menge von local",local.menge)
-                print("menge von i",i.menge)
-                local.menge += i.menge
-                print("after menge von local",local.menge)
-                if let index = taskArr.index(where: {$0.ean == i.ean}) {
-                    print("index",index)
-                    taskArr.remove(at: index)
-                    taskArr.append(local)
-                    //print("EAN after", taskArr[index].ean)
-                    print("-----------")
-                }
-            }else{
-                taskArr.append(task!)
-            }
-        }
-         creatCSV("kunde")
-        //https://bellisproduct-24167.firebaseio.com/bestand.json?menge=true
-        //curl 'https://bellisproduct-24167].firebaseio.com/bestan.json'
+//
+//       // CSVExport.export.enableStrictValidation = true
+//
+//       var ii = 0
+//        for i in realDataProducts{
+//            ii = ii + 1
+//            task = Task()
+//            task.id = ii
+//            task.color = i.color
+//            task.date = i.date
+//            task.ean = i.ean
+//            task.imageUrl = i.imageUrl
+//            let karton = i.karton.replacingOccurrences(of: "und", with: "/")
+//            let karton2 = karton.replacingOccurrences(of: ",", with: "/")
+//            let karton3 = karton2.replacingOccurrences(of: " ", with: "")
+//            task.karton = karton3
+//            task.key = i.key
+//            task.menge = i.menge
+//            total = total + i.menge
+//            task.name = i.name
+//            task.position = i.position
+//            task.size = i.size
+//            task.sku = i.sku
+//            task.vID = i.vID
+//
+//            bestandTaskArr.append(task!)
+//            //taskArr.append(task!)
+//        }
+//        //creatCSV("bestand")
+//
+//
+//       // taskArr.removeAll()
+//        ii = 0
+//        for i in realDataProducts{
+//            ii = ii + 1
+//            task = Task()
+//            task.id = ii
+//            task.color = i.color
+//            task.date = i.date
+//            task.ean = i.ean
+//            task.imageUrl = i.imageUrl
+//
+//
+//
+//            let karton = i.karton.replacingOccurrences(of: "und", with: "/")
+//            let karton2 = karton.replacingOccurrences(of: ",", with: "/")
+//            let karton3 = karton2.replacingOccurrences(of: " ", with: "")
+//            task.karton = karton3
+//
+//            task.key = i.key
+//            task.menge = i.menge
+//            task.name = i.name
+//            task.position = i.position
+//            task.size = i.size
+//            task.sku = i.sku
+//            task.vID = i.vID
+//
+//            if let local = taskArr.first(where: {$0.ean == i.ean}) {
+//                print("-----------")
+//                print("ID von local",local.id)
+//                print("ean von i",i.ean)
+//                print("ean von local",local.ean)
+//                print("menge von local",local.menge)
+//                print("menge von i",i.menge)
+//                local.menge += i.menge
+//                print("after menge von local",local.menge)
+//                if let index = taskArr.index(where: {$0.ean == i.ean}) {
+//                    print("index",index)
+//                    taskArr.remove(at: index)
+//                    taskArr.append(local)
+//                    //print("EAN after", taskArr[index].ean)
+//                    print("-----------")
+//                }
+//            }else{
+//                //.append(task!)
+//                kundeTaskArr.append(task!)
+//            }
+//        }
+//
+//        self.navigationItem.title = "Total \(total)"
+//        // creatCSV("kunde")
+//        //https://bellisproduct-24167.firebaseio.com/bestand.json?menge=true
+//        //curl 'https://bellisproduct-24167].firebaseio.com/bestan.json'
     }
     
     func checkFirebaseConnection(){
@@ -212,6 +290,7 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
                     self.dataProducts.append(a)
                 }
                 self.realDataProducts = self.dataProducts
+                customObjects.listOfProducts = self.realDataProducts
                 
                 if let a = SessionStruct.filter{
                     self.filterSearch()
@@ -263,7 +342,12 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
         
         guard let filter = SessionStruct.filter else {
                 dataProducts = realDataProducts.filter{ $0.name.lowercased().contains(filterString.lowercased()) }
-                mytbl.reloadData()
+            mytbl.reloadData()
+            DispatchQueue.main.async(execute: {
+               self.meins()
+               // self.navigationItem.title = "Ingesamt : \(self.total)"
+                
+            })
                 return
             }
             switch filter{
@@ -297,7 +381,15 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
             default:
                 break
             }
-            mytbl.reloadData()
+        
+       
+        mytbl.reloadData()
+        DispatchQueue.main.async(execute: {
+            //self.navigationItem.title = "Ingesamt : \(self.total)"
+             self.meins()
+        })
+        
+        
     }
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         self.dataProducts = self.realDataProducts
@@ -390,6 +482,7 @@ extension MainTableViewController: UITableViewDelegate,UITableViewDataSource{
             cell.nameCell.text = dataProducts[indexPath.row].name
         }
         cell.totalStockCell.text = String(describing:dataProducts[indexPath.row].menge)
+       // total = total + dataProducts[indexPath.row].menge
         if let first = dataProducts[indexPath.row].date.components(separatedBy: " ").first {
             cell.dateCell.text = first
         }
