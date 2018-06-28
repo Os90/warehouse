@@ -101,6 +101,7 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
        // CSVExport.export.enableStrictValidation = true
         
        var ii = 0
+        var menge = 0
         for i in realDataProducts{
             ii = ii + 1
             task = Task()
@@ -120,8 +121,12 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
             task.size = i.size
             task.sku = i.sku
             task.vID = i.vID
+            
+            menge = menge + i.menge
             taskArr.append(task!)
         }
+        print(menge)
+        
         creatCSV("bestand")
         
         
