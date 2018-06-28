@@ -15,11 +15,11 @@ class ListViewController: UIViewController {
     var filesInFolder = [Any]()
     
     var listArray = ["Kunde","Bestand"]
+    var countArray = [Int]()
     
      var pdfArray = [String]()
     
     @IBOutlet weak var exportBtn: UIButton!
-    
     
     @IBOutlet weak var mytbl: UITableView!
     
@@ -28,13 +28,24 @@ class ListViewController: UIViewController {
     
      var taskArr = [Task]()
     
+    @IBOutlet weak var infioLabel: UILabel!
+    
+     let defaults = UserDefaults.standard
+    
+    var excelCreated = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-         exportBtn.alpha = 0.0
+            exportBtn.alpha = 0.5
+            exportBtn.isEnabled = false
+            checkForDate()
+        
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
+    
+
     
     func listFilesFromDocumentsFolder(_ myUrl : URL?) -> [Any]?
     {
@@ -51,9 +62,8 @@ class ListViewController: UIViewController {
         }else{
             return nil
         }
-        
-
     }
+    
     func createBestandArray()->[Task]{
         
         var ii = 0
@@ -96,8 +106,6 @@ class ListViewController: UIViewController {
             task.ean = i.ean
             task.imageUrl = i.imageUrl
 
-
-
             let karton = i.karton.replacingOccurrences(of: "und", with: "/")
             let karton2 = karton.replacingOccurrences(of: ",", with: "/")
             let karton3 = karton2.replacingOccurrences(of: " ", with: "")
@@ -112,24 +120,22 @@ class ListViewController: UIViewController {
             task.vID = i.vID
             
             if let local = kundeTaskArr.first(where: {$0.ean == i.ean}) {
-                print("-----------")
-                print("ID von local",local.id)
-                print("ean von i",i.ean)
-                print("ean von local",local.ean)
-                print("menge von local",local.menge)
-                print("menge von i",i.menge)
+//                print("-----------")
+//                print("ID von local",local.id)
+//                print("ean von i",i.ean)
+//                print("ean von local",local.ean)
+//                print("menge von local",local.menge)
+//                print("menge von i",i.menge)
                 local.menge += i.menge
-                print("after menge von local",local.menge)
+               // print("after menge von local",local.menge)
                 if let index = kundeTaskArr.index(where: {$0.ean == i.ean}) {
-                    print("index",index)
+                    //print("index",index)
                     kundeTaskArr.remove(at: index)
                     kundeTaskArr.append(local)
                     //print("EAN after", taskArr[index].ean)
-                    print("-----------")
+                    //print("-----------")
                 }
             }else{
-                //kundeTaskArr.append(task)
-                
                 kundeTaskArr.append(task)
             }
         }
@@ -188,48 +194,81 @@ class ListViewController: UIViewController {
         createCsv(name: listArray[1])
         
         exportBtn.alpha = 1.0
+        exportBtn.isEnabled = true
+        
+        
+        let todayDate = getDate().components(separatedBy: " ").first
+        defaults.set(todayDate, forKey: "exportDate")
+        infioLabel.text  = "Zuletzt exportiert : Heute!"
+        
     }
     
-    
+    func isKeyPresentInUserDefaults(_ key: String) -> Bool {
+        return UserDefaults.standard.object(forKey: key) != nil
+    }
+    func checkForDate(){
+       
+        if isKeyPresentInUserDefaults("exportDate"){
+            let date = defaults.value(forKey: "exportDate")
+            infioLabel.text = "Zuletzt exportiert am \(date!)"
+        }else{
+            infioLabel.text = "Noch nie exportiert!"
+        }
+    }
 
 }
 
 extension ListViewController : UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return listArray.count
+        return 2
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = mytbl.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.textLabel?.text = listArray[indexPath.row]
-       // cell.detailTextLabel?.text = pdfArray[indexPath.row]
+        let cell = mytbl.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! ListTableViewCell
+        
+        cell.mainLabel.text = "\(listArray[indexPath.row]).csv"
+
+        if excelCreated{
+            cell.doneImg.isHidden = false
+            
+            cell.total.text = "\(countArray[indexPath.row]) Produkte"
+            UIView.animate(withDuration: 1.5, animations: {
+                    cell.doneImg.alpha = 1.0
+            })
+        }else{
+            cell.doneImg.isHidden = true
+        }
+        cell.selectionStyle = .none
         return cell
     }
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 70.0
     }
-    
-    
     func createCsv(name : String){
         
         switch name {
         case "Kunde":
             let a = createCustomerArray()
+            customObjects.kundeCount = a.count
             if saveCSV(name,a, customObjects.url_csv!){
-                print("csv erstellt",name,customObjects.url_csv)
+                countArray.insert(customObjects.kundeCount!, at: 0)
             }
             break
         case "Bestand":
-            if saveCSV(name, createBestandArray(), customObjects.url_csv!){
-                print("csv erstellt",name,customObjects.url_csv)
+             let a = createBestandArray()
+             customObjects.bestandCount = a.count
+            if saveCSV(name, a, customObjects.url_csv!){
+                countArray.insert(customObjects.bestandCount!, at: 1)
+
             }
             break
         default:
             break
         }
-
+        excelCreated = true
+        mytbl.reloadData()
     }
-    
-    
-
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "Datein zur exportieren"
+    }
 }

@@ -41,8 +41,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func createDic()->URL?{
         let documentsPath1 = NSURL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])
         let logsPath = documentsPath1.appendingPathComponent("CSV")
-        print("path",documentsPath1)
-        print("logs",logsPath!)
         do {
             try FileManager.default.createDirectory(atPath: logsPath!.path, withIntermediateDirectories: true, attributes: nil)
             defaults.set(true, forKey: "csv")

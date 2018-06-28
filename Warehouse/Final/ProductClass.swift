@@ -23,6 +23,7 @@ struct CustomProdutct : Codable{
     var key  = String()
     var date = String()
     var karton = String()
+    var id = Int()
     
     init(){
         self.name = String()
@@ -36,6 +37,7 @@ struct CustomProdutct : Codable{
         self.color = String()
         self.date = String()
         self.karton = String()
+        self.id = Int()
     }
     init(snapshot: DataSnapshot) {
         let snapshotValue = snapshot.value as! [String:AnyObject]
@@ -50,6 +52,7 @@ struct CustomProdutct : Codable{
         color = (snapshotValue["color"] as? String) ?? "keine Farbe"
         date = (snapshotValue["date"] as? String) ?? "no date"
         karton = (snapshotValue["karton"] as? String) ?? "no karton"
+        id = (snapshotValue["id"] as? Int) ?? 0
     }
     
 }
