@@ -14,12 +14,41 @@ import Firebase
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    
+    let defaults = UserDefaults.standard
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
-        // Override point for customization after application launch.
+        if folderExists(){
+            customObjects.url_csv = defaults.url(forKey: "csv_url")
+        }else{
+            let path = createDic()
+            defaults.set(path, forKey: "csv_url")
+            customObjects.url_csv = path
+        }
         return true
+    }
+    
+    func folderExists()->Bool{
+        if defaults.bool(forKey: "csv"){
+            return true
+        }else{
+            return false
+        }
+    }
+    
+    func createDic()->URL?{
+        let documentsPath1 = NSURL(fileURLWithPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0])
+        let logsPath = documentsPath1.appendingPathComponent("CSV")
+        do {
+            try FileManager.default.createDirectory(atPath: logsPath!.path, withIntermediateDirectories: true, attributes: nil)
+            defaults.set(true, forKey: "csv")
+            return logsPath
+        } catch let error as NSError {
+            NSLog("Unable to create directory \(error.debugDescription)")
+        }
+        return nil
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

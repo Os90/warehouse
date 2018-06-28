@@ -29,72 +29,55 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
     var realDataProducts = [CustomProdutct]()
     
     var taskArr = [Task]()
+    
+    var kundeTaskArr = [Task]()
+    var bestandTaskArr = [Task]()
+    
     var task: Task!
+    
+    
+    var total = 0
+    
+    var path : URL?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         registerCell(tableName: mytbl, nibname: "MainCell", cell: "Cell")
        
         indicator.startAnimating()
+        
         dataFromServer()
         filter.placeholder = "name"
         filter.showsCancelButton = true
         filter.keyboardType = .default
         filter.delegate = self
+    
+        navigationItem.hidesSearchBarWhenScrolling = true
+        
+       // mytbl.register(M, forCellReuseIdentifier: "cell0")
+
     }
-    override func viewDidAppear(_ animated: Bool) {
-//        guard let update = SessionStruct.updated else {return}
-//        if update == true{
-//            dataFromServer()
-//        }
+
+    func countTotalProducts(){
+        var total = 0
+        for i in customObjects.listOfProducts{
+            
+            total = total + i.menge
+            
+        }
+        print(total)
+        self.navigationController!.tabBarController?.tabBar.items![1].badgeValue = String(total)
+        
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        
     }
     @IBAction func scanBtnAct(_ sender: Any) {
         self.performSegue(withIdentifier: "scan", sender: self)
     }
-    
-    @IBAction func mach(_ sender: Any) {
-        meins()
-    }
-    // MARK: CSV file creating
-    func creatCSV(_ name : String) -> Void {
-        let fileName = "\(name).csv"
-        let path = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(fileName)
-//        var csvText = "Color,Datum,EAN,image,karton,key,menge,name,position,size,sku,variantenID\n"
-//
-//        for task in taskArr {
-//            let newLine = "\(task.color),\(task.date),\(task.ean),\(task.imageUrl),\(task.karton),\(task.key),\(task.menge),\(task.name),\(task.position),\(task.size),\(task.sku),\(task.vID)\n"
-//            csvText.append(newLine)
-//        }
-        
-        var csvText = ""
-        if name == "kunde"{
-            csvText = "EAN,Menge,Name\n"
-            for task in taskArr {
-                let newLine = "\(task.ean),\(task.menge),\(task.name)\n"
-                csvText.append(newLine)
-            }
-        }
-        else{
-            csvText = "ID,Color,Datum,EAN,Karton,Menge,Name,Position,Größe,SKU\n"
-            for task in taskArr {
-                let newLine = "\(task.id),\(task.color),\(task.date),\(task.ean),\(task.karton),\(task.menge),\(task.name),\(task.position),\(task.size),\(task.sku)\n"
-                csvText.append(newLine)
-            }
-        }
 
-        do {
-            try csvText.write(to: path!, atomically: true, encoding: String.Encoding.utf8)
-        } catch {
-            print("Failed to create file")
-            print("\(error)")
-        }
-        print(path ?? "not found")
-    }
     
     func meins(){
         
@@ -179,29 +162,10 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
          creatCSV("kunde")
         //https://bellisproduct-24167.firebaseio.com/bestand.json?menge=true
         //curl 'https://bellisproduct-24167].firebaseio.com/bestan.json'
+
+
     }
     
-    func checkFirebaseConnection(){
-        let connectedRef = db.child("bestand")
-        connectedRef.observe(.value, with: { snapshot in
-            if let connected = snapshot.value as? Bool, connected {
-                self.indicator.stopAnimating()
-                self.dataFromServer()
-            } else {
-                let alertController = UIAlertController(title:"Keine Internet Verbindung", message: "Nochmal versuchhen", preferredStyle:.alert)
-                
-                let Action = UIAlertAction.init(title: "Ok", style: .default) { (UIAlertAction) in
-                    self.checkFirebaseConnection()
-                }
-                let CancelAction = UIAlertAction.init(title: "Abbrechen", style: .cancel) { (UIAlertAction) in
-                    
-                }
-                alertController.addAction(Action)
-                alertController.addAction(CancelAction)
-                self.present(alertController, animated: true, completion: nil)
-            }
-        })
-    }
     
     func dataFromServer(){
          db = Database.database().reference()
@@ -217,8 +181,13 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
                     self.dataProducts.append(a)
                 }
                 self.realDataProducts = self.dataProducts
-                
-                if let a = SessionStruct.filter{
+                //self.checkTotalProducts(self.dataProducts.count)
+                customObjects.listOfProducts = self.realDataProducts
+                self.navigationController!.tabBarItem.badgeValue = String(self.realDataProducts.count)
+                self.countTotalProducts()
+//                let a = self.realDataProducts.filter({$0.id == 2})
+//                print(a)
+                if let _ = SessionStruct.filter{
                     self.filterSearch()
                 }else{
                     self.filterSearch(" ")
@@ -268,7 +237,10 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
         
         guard let filter = SessionStruct.filter else {
                 dataProducts = realDataProducts.filter{ $0.name.lowercased().contains(filterString.lowercased()) }
-                mytbl.reloadData()
+            mytbl.reloadData()
+            DispatchQueue.main.async(execute: {
+              // self.meins()
+            })
                 return
             }
             switch filter{
@@ -302,7 +274,15 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
             default:
                 break
             }
-            mytbl.reloadData()
+        
+       
+        mytbl.reloadData()
+        DispatchQueue.main.async(execute: {
+            //self.navigationItem.title = "Ingesamt : \(self.total)"
+            // self.meins()
+        })
+        
+        
     }
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         self.dataProducts = self.realDataProducts
@@ -338,7 +318,7 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
             
             let attributedString = NSAttributedString(string: SessionStruct.filter ?? "© Warehouse",
                                                       attributes: [NSAttributedStringKey.font: UIFont.systemFont(ofSize: 10.0)])
-            self.navigationItem.title = attributedString.string
+            //self.navigationItem.title = attributedString.string
             self.filterSearch()
             //self.filterSearch("Filter")
             //SessionStruct.filter = self.selectedFilter
@@ -382,42 +362,84 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
     
 }
 extension MainTableViewController: UITableViewDelegate,UITableViewDataSource{
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return dataProducts.count
+        
+        if section == 1{
+             return dataProducts.count
+        }else{
+            return 1
+        }
+       
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = mytbl.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! MainTableViewCell
-        cell.positionCell.text = "Position:\(dataProducts[indexPath.row].position)"
-        if dataProducts[indexPath.row].name == "" {
-            cell.nameCell.text = "EAN:\(dataProducts[indexPath.row].ean)"
-        }else{
-            cell.nameCell.text = dataProducts[indexPath.row].name
-        }
-        cell.totalStockCell.text = String(describing:dataProducts[indexPath.row].menge)
-        if let first = dataProducts[indexPath.row].date.components(separatedBy: " ").first {
-            cell.dateCell.text = first
-        }
-        cell.eanCell.text = "Ean :\(dataProducts[indexPath.row].ean)"
-        
-        let photoUrl = dataProducts[indexPath.row].imageUrl
-        if photoUrl != "" && photoUrl != "kein Bild"{
-            getImage(url: photoUrl) { photo in
-                if photo != nil {
-                    DispatchQueue.main.async {
-                        cell.imageUrlCell.image = photo
+        if indexPath.section == 1{
+            //let cell = mytbl.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! MainTableViewCell
+            cell.positionCell.text = "Position:\(dataProducts[indexPath.row].position)"
+            if dataProducts[indexPath.row].name == "" {
+                cell.nameCell.text = "EAN:\(dataProducts[indexPath.row].ean)"
+            }else{
+                cell.nameCell.text = dataProducts[indexPath.row].name
+            }
+            cell.totalStockCell.text = String(describing:dataProducts[indexPath.row].menge)
+            // total = total + dataProducts[indexPath.row].menge
+            if let first = dataProducts[indexPath.row].date.components(separatedBy: " ").first {
+                cell.dateCell.text = first
+            }
+            cell.eanCell.text = "Ean :\(dataProducts[indexPath.row].ean)"
+            
+            let photoUrl = dataProducts[indexPath.row].imageUrl
+            if photoUrl != "" && photoUrl != "kein Bild"{
+                getImage(url: photoUrl) { photo in
+                    if photo != nil {
+                        DispatchQueue.main.async {
+                            cell.imageUrlCell.image = photo
+                        }
                     }
                 }
             }
+            return cell
+        }else{
+            //let cell = mytbl.dequeueReusableCell(withIdentifier: "cell0", for: indexPath)
+            if dataProducts.count > 0{
+               // let filter = dataProducts.sorted(by: {$0.id > $1.id})
+                //let sortedArray = dataProducts.sorted(by: {$0.id > $1.id})
+                //cell.eanCell.text = "Ean :\(filter[0].ean)"
+               // print(sortedArray)
+               // dataProducts.sort { $0.compare($1, options: .numeric) == .orderedAscending }d
+        
+              let b =  dataProducts.sorted { $0.id < $1.id }
+                //let a = realDataProducts.filter({$0.id == 2})
+              print(b)
+                print(dataProducts)
+               // cell.dateCell.text = filter?.date
+            }
+
+            cell.positionCell.text = "lksdflajlfajs"
+            cell.imageUrlCell.image = UIImage.init(named: "icons8-double_tick_filled-1")
+            return cell
         }
-        return cell
+        
+
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
         return 92.0
     }
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         
-        return "Alle Produkte (\(dataProducts.count))"
+        if section == 1{
+              return "Alle Produkte (\(dataProducts.count))"
+        }else{
+              return "Zuletzt eingefügt"
+        }
+      
         
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -447,6 +469,7 @@ extension MainTableViewController: UITableViewDelegate,UITableViewDataSource{
         self.db.child("prozesse").child(text).childByAutoId().setValue(dict, withCompletionBlock: {error ,ref in
             if error != nil{
             }else{
+                
             }
         })
     }
@@ -454,5 +477,20 @@ extension MainTableViewController: UITableViewDelegate,UITableViewDataSource{
 extension UIViewController {
     func CGRectMake(_ x: CGFloat, _ y: CGFloat, _ width: CGFloat, _ height: CGFloat) -> CGRect {
         return CGRect(x: x, y: y, width: width, height: height)
+    }
+}
+extension String {
+    var toDate: Date {
+        return Date.Formatter.customDate.date(from: self)!
+    }
+}
+extension Date {
+    struct Formatter {
+        static let customDate: DateFormatter = {
+            let formatter = DateFormatter()
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.dateFormat = "yyyy-MM-dd"
+            return formatter
+        }()
     }
 }

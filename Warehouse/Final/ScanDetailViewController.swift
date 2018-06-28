@@ -36,13 +36,31 @@ class ScanDetailViewController: UIViewController {
         super.viewDidLoad()
        
         guard let value = eanValueFrom else {return}
-        eanValue.text = value
+        //eanValue.text = value
         saveDetailsOutlet.isEnabled = false
+        self.navigationItem.title = value
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func isKeyPresentInUserDefaults(key: String) -> Bool {
+        return UserDefaults.standard.object(forKey: key) != nil
+    }
+    
+    func getLastID()->Int{
+        let defaults = UserDefaults.standard
+        if isKeyPresentInUserDefaults(key: "id"){
+            var id = defaults.integer(forKey: "id")
+            id = id + 1
+            defaults.set(id, forKey: "id")
+            return id
+        }else{
+            defaults.set(1, forKey: "id")
+            return 1
+        }
     }
     
     func postWithParameter(_ realStock : String,_ realSize : String, _ realEan : String,_ realPosition :String,_ realKarton :String, _ realName : String){
@@ -55,6 +73,7 @@ class ScanDetailViewController: UIViewController {
         product.size = realSize
         product.date = getDate()
         product.position = realPosition
+        product.id = getLastID()
         product.key = db.childByAutoId().key
         let productToSend = product.getDictionary()
         self.db.child("bestand").child(product.key).setValue(productToSend, withCompletionBlock: {error ,ref in
