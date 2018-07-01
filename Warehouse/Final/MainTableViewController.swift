@@ -53,9 +53,13 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
         filter.delegate = self
     
         navigationItem.hidesSearchBarWhenScrolling = true
-        
-       // mytbl.register(M, forCellReuseIdentifier: "cell0")
-
+        changeMakeTabbarItmes(false)
+    }
+    
+    func changeMakeTabbarItmes(_ value : Bool){
+        if let tabArray = self.tabBarController?.tabBar.items {
+            tabArray.map{$0.isEnabled = value}
+        }
     }
 
     func countTotalProducts(){
@@ -65,7 +69,7 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
             total = total + i.menge
             
         }
-        print(total)
+        //print(total)
         self.navigationController!.tabBarController?.tabBar.items![1].badgeValue = String(total)
         
     }
@@ -110,7 +114,7 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
         }
         print(menge)
         
-        creatCSV("bestand")
+        //creatCSV("bestand")
         
         
         taskArr.removeAll()
@@ -159,19 +163,37 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
                 taskArr.append(task!)
             }
         }
-         creatCSV("kunde")
+        // creatCSV("kunde")
         //https://bellisproduct-24167.firebaseio.com/bestand.json?menge=true
         //curl 'https://bellisproduct-24167].firebaseio.com/bestan.json'
 
 
     }
     
+    func combineProducts(){
+
+       // print(filter)
+        var names = [String]()
+        for i in customObjects.listOfProducts{
+            let a = i.name.components(separatedBy: "/").first
+            if names.contains({a!}()){
+                print("doppelt")
+            }else{
+                names.append(a!)
+            }
+        }
+        print(names)
+        
+        customObjects.productList = names
+
+    }
     
     func dataFromServer(){
          db = Database.database().reference()
         db.child("bestand").observe(.value, with: {(snapshot) in
            // print(snapshot)
             if snapshot.childrenCount > 0 {
+                self.changeMakeTabbarItmes(true)
                 self.indicator.stopAnimating()
                 self.indicator.isHidden = true
                 self.dataProducts.removeAll()
@@ -180,13 +202,13 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
                     let a = CustomProdutct.init(snapshot: artists)
                     self.dataProducts.append(a)
                 }
-                self.realDataProducts = self.dataProducts
-                //self.checkTotalProducts(self.dataProducts.count)
+                let filter = self.dataProducts.sorted(by: {$0.name.lowercased().localizedStandardCompare($1.name.lowercased()) == .orderedDescending })
+                //self.realDataProducts = self.dataProducts
+                self.realDataProducts = filter
                 customObjects.listOfProducts = self.realDataProducts
+                self.combineProducts()
                 self.navigationController!.tabBarItem.badgeValue = String(self.realDataProducts.count)
                 self.countTotalProducts()
-//                let a = self.realDataProducts.filter({$0.id == 2})
-//                print(a)
                 if let _ = SessionStruct.filter{
                     self.filterSearch()
                 }else{
@@ -363,23 +385,23 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
 }
 extension MainTableViewController: UITableViewDelegate,UITableViewDataSource{
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
-    }
+//    func numberOfSections(in tableView: UITableView) -> Int {
+//        return 2
+//    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if section == 1{
-             return dataProducts.count
-        }else{
-            return 1
-        }
-       
+//        if section == 1{
+//             return dataProducts.count
+//        }else{
+//            return 1
+//        }
+       return dataProducts.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = mytbl.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! MainTableViewCell
-        if indexPath.section == 1{
+
             //let cell = mytbl.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! MainTableViewCell
             cell.positionCell.text = "Position:\(dataProducts[indexPath.row].position)"
             if dataProducts[indexPath.row].name == "" {
@@ -405,26 +427,28 @@ extension MainTableViewController: UITableViewDelegate,UITableViewDataSource{
                 }
             }
             return cell
-        }else{
-            //let cell = mytbl.dequeueReusableCell(withIdentifier: "cell0", for: indexPath)
-            if dataProducts.count > 0{
-               // let filter = dataProducts.sorted(by: {$0.id > $1.id})
-                //let sortedArray = dataProducts.sorted(by: {$0.id > $1.id})
-                //cell.eanCell.text = "Ean :\(filter[0].ean)"
-               // print(sortedArray)
-               // dataProducts.sort { $0.compare($1, options: .numeric) == .orderedAscending }d
         
-              let b =  dataProducts.sorted { $0.id < $1.id }
-                //let a = realDataProducts.filter({$0.id == 2})
-              print(b)
-                print(dataProducts)
-               // cell.dateCell.text = filter?.date
-            }
-
-            cell.positionCell.text = "lksdflajlfajs"
-            cell.imageUrlCell.image = UIImage.init(named: "icons8-double_tick_filled-1")
-            return cell
-        }
+        
+//        else{
+////            //let cell = mytbl.dequeueReusableCell(withIdentifier: "cell0", for: indexPath)
+////            if dataProducts.count > 0{
+////               // let filter = dataProducts.sorted(by: {$0.id > $1.id})
+////                //let sortedArray = dataProducts.sorted(by: {$0.id > $1.id})
+////                //cell.eanCell.text = "Ean :\(filter[0].ean)"
+////               // print(sortedArray)
+////               // dataProducts.sort { $0.compare($1, options: .numeric) == .orderedAscending }d
+////
+//////              let b =  dataProducts.sorted { $0.id < $1.id }
+//////                //let a = realDataProducts.filter({$0.id == 2})
+//////              print(b)
+//////                print(dataProducts)
+////               // cell.dateCell.text = filter?.date
+////            }
+////
+////            cell.positionCell.text = "lksdflajlfajs"
+////            cell.imageUrlCell.image = UIImage.init(named: "icons8-double_tick_filled-1")
+////            return cell
+//        }
         
 
     }
@@ -433,14 +457,14 @@ extension MainTableViewController: UITableViewDelegate,UITableViewDataSource{
         return 92.0
     }
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        
-        if section == 1{
-              return "Alle Produkte (\(dataProducts.count))"
-        }else{
-              return "Zuletzt eingefügt"
-        }
+//
+//        if section == 1{
+//              return "Alle Produkte (\(dataProducts.count))"
+//        }else{
+//              return "Zuletzt eingefügt"
+//        }
       
-        
+        return "Alle Produkte (\(dataProducts.count))"
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.performSegue(withIdentifier: "edit", sender: indexPath.row)

@@ -34,12 +34,22 @@ class ListViewController: UIViewController {
     
     var excelCreated = false
     
+    @IBOutlet weak var kundeLabel: UILabel!
+    
+    @IBOutlet weak var bestandLabel: UILabel!
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
             exportBtn.alpha = 0.5
             exportBtn.isEnabled = false
             checkForDate()
+
+        exportBtn.layer.cornerRadius = 5
+        exportBtn.layer.borderWidth = 1
+        exportBtn.layer.borderColor = UIColor.white.cgColor
         
+        createExportList()
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -188,8 +198,8 @@ class ListViewController: UIViewController {
         
     }
     
-    @IBAction func create(_ sender: Any) {
-        
+    
+    func createExportList(){
         createCsv(name: listArray[0])
         createCsv(name: listArray[1])
         
@@ -200,6 +210,11 @@ class ListViewController: UIViewController {
         let todayDate = getDate().components(separatedBy: " ").first
         defaults.set(todayDate, forKey: "exportDate")
         infioLabel.text  = "Zuletzt exportiert : Heute!"
+    }
+    
+    @IBAction func create(_ sender: Any) {
+        
+        createExportList()
         
     }
     
@@ -215,35 +230,6 @@ class ListViewController: UIViewController {
             infioLabel.text = "Noch nie exportiert!"
         }
     }
-
-}
-
-extension ListViewController : UITableViewDelegate, UITableViewDataSource{
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = mytbl.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! ListTableViewCell
-        
-        cell.mainLabel.text = "\(listArray[indexPath.row]).csv"
-
-        if excelCreated{
-            cell.doneImg.isHidden = false
-            
-            cell.total.text = "\(countArray[indexPath.row]) Produkte"
-            UIView.animate(withDuration: 1.5, animations: {
-                    cell.doneImg.alpha = 1.0
-            })
-        }else{
-            cell.doneImg.isHidden = true
-        }
-        cell.selectionStyle = .none
-        return cell
-    }
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 70.0
-    }
     func createCsv(name : String){
         
         switch name {
@@ -252,23 +238,57 @@ extension ListViewController : UITableViewDelegate, UITableViewDataSource{
             customObjects.kundeCount = a.count
             if saveCSV(name,a, customObjects.url_csv!){
                 countArray.insert(customObjects.kundeCount!, at: 0)
+                kundeLabel.text = "\(countArray[0])"
             }
             break
         case "Bestand":
-             let a = createBestandArray()
-             customObjects.bestandCount = a.count
+            let a = createBestandArray()
+            customObjects.bestandCount = a.count
             if saveCSV(name, a, customObjects.url_csv!){
                 countArray.insert(customObjects.bestandCount!, at: 1)
-
+                //bestandLabel.text = "Bestand : \(countArray[1]) Produkte"
             }
             break
         default:
             break
         }
         excelCreated = true
-        mytbl.reloadData()
+        
+        
+        
+       // mytbl.reloadData()
     }
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Datein zur exportieren"
-    }
+
 }
+
+//extension ListViewController : UITableViewDelegate, UITableViewDataSource{
+//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        return 2
+//    }
+//
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        let cell = mytbl.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! ListTableViewCell
+//
+//        cell.mainLabel.text = "\(listArray[indexPath.row]).csv"
+//
+//        if excelCreated{
+//            cell.doneImg.isHidden = false
+//
+//            cell.total.text = "\(countArray[indexPath.row]) Produkte"
+//            UIView.animate(withDuration: 1.5, animations: {
+//                    cell.doneImg.alpha = 1.0
+//            })
+//        }else{
+//            cell.doneImg.isHidden = true
+//        }
+//        cell.selectionStyle = .none
+//        return cell
+//    }
+//    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+//        return 70.0
+//    }
+//
+//    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+//        return "Datein zur exportieren"
+//    }
+//}

@@ -23,6 +23,8 @@
 		15AFC2F620A3D8F100740563 /* ScanStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 15AFC2F520A3D8F100740563 /* ScanStoryboard.storyboard */; };
 		15AFC2F920A3E7E900740563 /* ScanViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AFC2F820A3E7E900740563 /* ScanViewController.swift */; };
 		15AFC2FB20A4582800740563 /* MainTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15AFC2FA20A4582800740563 /* MainTableViewController.swift */; };
+		15BE912220E696A4005013D5 /* ProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BE912120E696A4005013D5 /* ProductViewController.swift */; };
+		15BE912420E6A723005013D5 /* ProductDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15BE912320E6A723005013D5 /* ProductDetailViewController.swift */; };
 		15C5D60A20C2385600E934E0 /* ScanDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C5D60920C2385600E934E0 /* ScanDetailViewController.swift */; };
 		15C5D60D20C24B8300E934E0 /* Info1TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C5D60C20C24B8300E934E0 /* Info1TableViewCell.swift */; };
 		15C5D60F20C24B9100E934E0 /* Info2TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C5D60E20C24B9100E934E0 /* Info2TableViewCell.swift */; };
@@ -82,6 +84,8 @@
 		15AFC2F520A3D8F100740563 /* ScanStoryboard.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ScanStoryboard.storyboard; sourceTree = "<group>"; };
 		15AFC2F820A3E7E900740563 /* ScanViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanViewController.swift; sourceTree = "<group>"; };
 		15AFC2FA20A4582800740563 /* MainTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewController.swift; sourceTree = "<group>"; };
+		15BE912120E696A4005013D5 /* ProductViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductViewController.swift; sourceTree = "<group>"; };
+		15BE912320E6A723005013D5 /* ProductDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetailViewController.swift; sourceTree = "<group>"; };
 		15C5D60920C2385600E934E0 /* ScanDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanDetailViewController.swift; sourceTree = "<group>"; };
 		15C5D60C20C24B8300E934E0 /* Info1TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Info1TableViewCell.swift; sourceTree = "<group>"; };
 		15C5D60E20C24B9100E934E0 /* Info2TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Info2TableViewCell.swift; sourceTree = "<group>"; };
@@ -192,6 +196,8 @@
 				AC542FA120D677D000E3105C /* ListViewController.swift */,
 				15EC3B6D2095DD75004548C8 /* AppDelegate.swift */,
 				AC2FD21220D9C2AD00690443 /* ListTableViewCell.swift */,
+				15BE912120E696A4005013D5 /* ProductViewController.swift */,
+				15BE912320E6A723005013D5 /* ProductDetailViewController.swift */,
 			);
 			path = Final;
 			sourceTree = "<group>";
@@ -525,6 +531,7 @@
 				153C17B6209D48190049B634 /* MyControl.swift in Sources */,
 				15AFC2F920A3E7E900740563 /* ScanViewController.swift in Sources */,
 				151CE1AD20D0344200D02963 /* task.swift in Sources */,
+				15BE912420E6A723005013D5 /* ProductDetailViewController.swift in Sources */,
 				15C5D60F20C24B9100E934E0 /* Info2TableViewCell.swift in Sources */,
 				15EC3BA1209798CE004548C8 /* ProductClass.swift in Sources */,
 				15AFC2FB20A4582800740563 /* MainTableViewController.swift in Sources */,
@@ -542,6 +549,7 @@
 				15C5D60D20C24B8300E934E0 /* Info1TableViewCell.swift in Sources */,
 				15EC3B6E2095DD75004548C8 /* AppDelegate.swift in Sources */,
 				AC542FA220D677D000E3105C /* ListViewController.swift in Sources */,
+				15BE912220E696A4005013D5 /* ProductViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

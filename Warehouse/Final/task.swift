@@ -32,4 +32,5 @@ struct customObjects {
     static var listOfProducts = [CustomProdutct]()
     static var kundeCount : Int?
     static var bestandCount : Int?
+    static var productList  = [String]()
 }
