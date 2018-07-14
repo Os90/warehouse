@@ -188,4 +188,20 @@ extension Encodable {
         return dictionary
     }
 }
-
+struct gps : Codable{
+    var id = Int()
+    var longitude  : String?
+    var latitude : String?
+    var created_at = String()
+    var updated_at = String()
+    var url = String()
+    
+    init(){
+        self.id = Int()
+        self.longitude = String()
+        self.latitude  = String()
+        self.created_at = String()
+        self.updated_at = String()
+        self.url = String()
+    }
+}

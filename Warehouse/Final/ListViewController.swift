@@ -57,22 +57,22 @@ class ListViewController: UIViewController {
     
 
     
-    func listFilesFromDocumentsFolder(_ myUrl : URL?) -> [Any]?
-    {
-        if let url = myUrl{
-            //var filesInFolder = [Any]()
-            let documentDirectoryPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
-            let myFilesPath = documentDirectoryPath.appending("/CSV")
-            let files = FileManager.default.enumerator(atPath: myFilesPath)
-            
-            while let file = files?.nextObject() {
-                filesInFolder.append(file)
-            }
-            return filesInFolder
-        }else{
-            return nil
-        }
-    }
+//    func listFilesFromDocumentsFolder(_ myUrl : URL?) -> [Any]?
+//    {
+//        if let url = myUrl{
+//            //var filesInFolder = [Any]()
+//            let documentDirectoryPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
+//            let myFilesPath = documentDirectoryPath.appending("/CSV")
+//            let files = FileManager.default.enumerator(atPath: myFilesPath)
+//
+//            while let file = files?.nextObject() {
+//                filesInFolder.append(file)
+//            }
+//            return filesInFolder
+//        }else{
+//            return nil
+//        }
+//    }
     
     func createBestandArray()->[Task]{
         
@@ -192,6 +192,10 @@ class ListViewController: UIViewController {
         let kundeFile =  customObjects.url_csv?.appendingPathComponent("Kunde.csv")
         let bestandFile =  customObjects.url_csv?.appendingPathComponent("Bestand.csv")
 
+        print(customObjects.url_csv)
+        print(kundeFile)
+       
+        
         let activityViewController: UIActivityViewController = UIActivityViewController(activityItems: [kundeFile,bestandFile], applicationActivities: nil)
         activityViewController.popoverPresentationController?.sourceView = self.view
         present(activityViewController, animated: true, completion: nil)

@@ -11,6 +11,7 @@ import SwiftCSVExport
 
 class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerViewDelegate,UIPickerViewDataSource {
     
+    
     @IBOutlet weak var filter: UISearchBar!
     
     @IBOutlet weak var mytbl: UITableView!
@@ -40,6 +41,8 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
     
     var path : URL?
     
+    var myarray = [gps]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         registerCell(tableName: mytbl, nibname: "MainCell", cell: "Cell")
@@ -54,7 +57,44 @@ class MainTableViewController: UIViewController,UISearchBarDelegate,UIPickerView
     
         navigationItem.hidesSearchBarWhenScrolling = true
         changeMakeTabbarItmes(false)
+        
+        getURL()
+        
     }
+    
+//
+    func getURL(){
+        var request = URLRequest(url: URL(string: "http://gpsforanimal.herokuapp.com/positions.json")!)
+        request.httpMethod = "GET"
+        let session = URLSession.shared
+        session.dataTask(with: request) {data, response, error in
+            if error != nil {
+                print(error!.localizedDescription)
+            }
+            guard let data = data else { return }
+            do {
+                //Decode retrived data with JSONDecoder and assing type of Article object
+                let articlesData = try JSONDecoder().decode([gps].self, from: data)
+                print(articlesData)
+                self.myarray  = articlesData
+//                for i in self.myarray{
+//                    print(i.latitude)
+//                    print(i.longitude)
+//                }
+                if let data = articlesData.last {
+                    print(data.latitude)
+                    print(data.longitude)
+                }
+
+                
+            } catch let jsonError {
+                print(jsonError)
+            }
+            }.resume()
+    }
+    
+   
+
     
     func changeMakeTabbarItmes(_ value : Bool){
         if let tabArray = self.tabBarController?.tabBar.items {
