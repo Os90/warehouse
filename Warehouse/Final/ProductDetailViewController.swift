@@ -16,6 +16,9 @@ class ProductDetailViewController: UIViewController {
     
     var mylist = [CustomProdutct]()
     
+    
+    var kundeTaskArr = [Task]()
+    
     var total = 0
     
     var selectedNamesFromView = [String]()
@@ -30,12 +33,7 @@ class ProductDetailViewController: UIViewController {
         for i in selectedNamesFromView{
             let a = customObjects.listOfProducts.filter({$0.name.lowercased().components(separatedBy: "/").first == i.lowercased()})
             mylist  = mylist + a
-//            if i = selectedNamesFromView.count{
-//                 names.append("\(i)")
-//            }else{
-//                 names.append("\(i)&")
-//            }
-           names.append("\(i)  ")
+            names.append("\(i)")
         }
         
         for x in mylist{
@@ -43,38 +41,69 @@ class ProductDetailViewController: UIViewController {
         }
 
         self.navigationItem.title = names
-
         
         mytbl.isEditing = true
         mytbl.allowsMultipleSelectionDuringEditing = true
 
     }
+
     
-    override func viewWillAppear(_ animated: Bool) {
-
-//        self.navigationController?.navigationBar.prefersLargeTitles = true
-//        self.navigationController?.navigationItem.largeTitleDisplayMode = .automatic
-//
-//        navigationItem.title = "This is multiline title for navigation bar"
-//        self.navigationController?.navigationBar.largeTitleTextAttributes = [
-//            NSAttributedStringKey.foregroundColor: UIColor.black,
-//            NSAttributedStringKey.font : UIFont.preferredFont(forTextStyle: .largeTitle)
-//        ]
-        //navigationItem.title = "This is multiline title for navigation bar"
-//        for navItem in(self.navigationController?.navigationBar.subviews)! {
-//            for itemSubView in navItem.subviews {
-//                if let largeLabel = itemSubView as? UILabel {
-//                    largeLabel.text = navigationItem.title
-//                    largeLabel.numberOfLines = 0
-//                    largeLabel.lineBreakMode = .byWordWrapping
-//                }
-//            }
-//        }
-
+    func selectAllRows() {
+        for section in 0 ..< mytbl.numberOfSections {
+            for row in 0 ..< mytbl.numberOfRows(inSection: section) {
+                mytbl.selectRow(at: IndexPath(row: row, section: section), animated: false, scrollPosition: .none)
+            }
+        }
+    }
+    
+    func deselectAllRows(){
+        for section in 0 ..< mytbl.numberOfSections {
+            for row in 0 ..< mytbl.numberOfRows(inSection: section) {
+                mytbl.deselectRow(at: IndexPath(row: row, section: section), animated: false)
+            }
+        }
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+    }
+    
+    func createCustomerArray(myarray : [CustomProdutct])->[Task]{
+
+        var ii = 0
+        for i in myarray{
+            ii = ii + 1
+            let task = Task()
+            task.id = ii
+            task.color = i.color
+            task.date = i.date
+            task.ean = i.ean
+            task.imageUrl = i.imageUrl
+            
+            let karton = i.karton.replacingOccurrences(of: "und", with: "/")
+            let karton2 = karton.replacingOccurrences(of: ",", with: "/")
+            let karton3 = karton2.replacingOccurrences(of: " ", with: "")
+            task.karton = karton3
+            
+            task.key = i.key
+            task.menge = i.menge
+            task.name = i.name
+            task.position = i.position
+            task.size = i.size
+            task.sku = i.sku
+            task.vID = i.vID
+            
+            if let local = kundeTaskArr.first(where: {$0.ean == i.ean}) {
+                local.menge += i.menge
+                if let index = kundeTaskArr.index(where: {$0.ean == i.ean}) {
+                    kundeTaskArr.remove(at: index)
+                    kundeTaskArr.append(local)
+                }
+            }else{
+                kundeTaskArr.append(task)
+            }
+        }
+        return kundeTaskArr
     }
     
     @IBAction func uploadAction(_ sender: Any) {
@@ -88,9 +117,13 @@ class ProductDetailViewController: UIViewController {
                 mySelectedArray.append(a)
             }
         }
-        if saveCSV(names, mySelectedArray, customObjects.url_csv!) {
-            let spezialFileKunde =  customObjects.url_csv?.appendingPathComponent("\(names)-Bestand.csv")
-            let spezialFileBestand =  customObjects.url_csv?.appendingPathComponent("\(names)-Kunde.csv")
+        
+        let a = createCustomerArray(myarray: mySelectedArray)
+        
+        
+        if saveCSV(names, a, customObjects.url_csv!) {
+            let spezialFileKunde =  customObjects.url_csv?.appendingPathComponent("\(names)-für_Bestand.csv")
+            let spezialFileBestand =  customObjects.url_csv?.appendingPathComponent("\(names)-für_Kunde.csv")
             let activityViewController: UIActivityViewController = UIActivityViewController(activityItems: [spezialFileKunde,spezialFileBestand], applicationActivities: nil)
             activityViewController.popoverPresentationController?.sourceView = self.view
             present(activityViewController, animated: true, completion: nil)
@@ -98,23 +131,23 @@ class ProductDetailViewController: UIViewController {
         
 
     }
-    func saveCSV(_ name : String, _ array : [CustomProdutct], _ customUrl : URL) -> Bool {
+    func saveCSV(_ name : String, _ array : [Task], _ customUrl : URL) -> Bool {
 
-        var fileName = "\(name)-Bestand.csv"
+        var fileName = "\(name)-für_Bestand.csv"
         // path = customUrl
         var b = customUrl.appendingPathComponent(fileName)
 
         var csvText = ""
-            csvText = "ID,Color,Datum,EAN,Karton,Menge,Name,Position,Größe,SKU\n"
+            csvText = "ID,EAN,Name,Karton,Menge,Position,Größe\n"
             for task in array {
-                let newLine = "\(task.id),\(task.color),\(task.date),\(task.ean),\(task.karton),\(task.menge),\(task.name),\(task.position),\(task.size),\(task.sku)\n"
+                let newLine = "\(task.id),\(task.ean),\(task.name),\(task.karton),\(task.menge),\(task.position),\(task.size)\n"
                 csvText.append(newLine)
             }
 
         do {
             try csvText.write(to: b, atomically: true, encoding: String.Encoding.utf8)
             
-            fileName = "\(name)-Kunde.csv"
+            fileName = "\(name)-für_Kunde.csv"
             // path = customUrl
             b = customUrl.appendingPathComponent(fileName)
             csvText = ""
@@ -140,19 +173,54 @@ class ProductDetailViewController: UIViewController {
     
 }
 extension ProductDetailViewController : UITableViewDelegate,UITableViewDataSource{
+    
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return mylist.count
+        
+        if section == 0{
+            return 1
+        }else{
+          return mylist.count
+        }
+      
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         
-        cell.textLabel?.text = mylist[indexPath.row].name
-        cell.detailTextLabel?.text = String(mylist[indexPath.row].menge)
+        if indexPath.section == 0{
+            cell.textLabel?.text = "Alle auswählen"
+            cell.detailTextLabel?.text = "Ingesamt \(total)"
+            //cell.textLabel?.textColor = UIColor.init(red: 55.0, green: 122.0, blue: 246.0, alpha: 1.0)
+        }else{
+            
+            cell.textLabel?.text = mylist[indexPath.row].name
+            cell.detailTextLabel?.text = String(mylist[indexPath.row].menge)
+        }
+
         return cell
     }
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Ingesamt \(total)"
+        if section == 0
+        {
+            return " "
+        }else{
+              return "Ingesamt \(total)"
+        }
+      
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section == 0{
+            selectAllRows()
+        }
+    }
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        if indexPath.section == 0{
+            deselectAllRows()
+        }
     }
 
 }
